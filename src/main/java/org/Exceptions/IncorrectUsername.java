@@ -1,0 +1,7 @@
+package org.Exceptions;
+
+public class IncorrectUsername extends RuntimeException {
+    public IncorrectUsername() {
+        super("Ошибка ввода, юзернейм может содержать только английские буквы или цифры и должен начинаться с буквы");
+    }
+}

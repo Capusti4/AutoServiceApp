@@ -1,0 +1,21 @@
+package org;
+
+import com.sun.net.httpserver.HttpServer;
+import org.Client.Handlers.LogInHandler;
+import org.Client.Handlers.MakeOrderHandler;
+import org.Client.Handlers.RegisterHandler;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+        server.createContext("/client/register", new RegisterHandler());
+        server.createContext("/client/logIn", new LogInHandler());
+        server.createContext("/client/makeOrder", new MakeOrderHandler());
+        server.setExecutor(null);
+        server.start();
+        System.out.println("Сервер запущен на http://localhost:8080/");
+    }
+}
