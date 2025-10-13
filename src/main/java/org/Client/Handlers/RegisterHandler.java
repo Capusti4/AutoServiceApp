@@ -21,14 +21,16 @@ public class RegisterHandler implements HttpHandler {
             String firstName = (String) data.get("firstName");
             String lastName = (String) data.get("lastName");
             String phoneNum = (String) data.get("phoneNum");
-            String userInfo = Registration.register(username, password, firstName, lastName, phoneNum);
-
+            String[] userInfoAndToken = Registration.register(username, password, firstName, lastName, phoneNum);
+            String userInfo = userInfoAndToken[0];
+            String token = userInfoAndToken[1];
             String response = String.format("""
                     {
                         "answer": "Юзер добавлен успешно",
-                        "userData": %s
+                        "userInfo": %s,
+                        "sessionToken": "%s"
                     }
-                    """, userInfo);
+                    """, userInfo, token);
             exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
             exchange.sendResponseHeaders(201, response.getBytes().length);
             try (OutputStream os = exchange.getResponseBody()) {

@@ -10,13 +10,17 @@ import org.Exceptions.UsernameAlreadyExists;
 import org.User;
 import org.bson.Document;
 
+import java.util.Arrays;
+
+import static org.Client.Services.ServiceFunctions.GenerateSessionToken;
+
 public class Registration {
-    public static String register(String username, String userFirstName, String userLastName, String userPhoneNum, String userPassword) {
+    public static String[] register(String username, String userFirstName, String userLastName, String userPhoneNum, String userPassword) {
         User user = new User(username, userFirstName, userLastName, userPhoneNum, userPassword);
         return addUser(user);
     }
 
-    static String addUser(User user) {
+    static String[] addUser(User user) {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoDatabase usersDatabase = mongoClient.getDatabase("Clients");
         MongoCollection<Document> usersCollection = usersDatabase.getCollection("Clients");
@@ -38,15 +42,20 @@ public class Registration {
             throw new IncorrectUsername();
         }
 
-        Document userDoc = new Document()
+        String token = GenerateSessionToken();
+
+        Document clientDoc = new Document()
                 .append("username", username)
                 .append("firstName", user.getFirstName())
                 .append("secondName", user.getLastName())
                 .append("phoneNum", user.getPhoneNum())
-                .append("password", user.getPassword());
-        usersCollection.insertOne(userDoc);
+                .append("password", user.getPassword())
+                .append("sessionTokens", Arrays.asList(token));
+        usersCollection.insertOne(clientDoc);
         mongoClient.close();
-        userDoc.remove("password");
-        return userDoc.toJson();
+        clientDoc.remove("password");
+        clientDoc.remove("_id");
+        clientDoc.remove("sessionTokens");
+        return new String[] {clientDoc.toJson(), token};
     }
 }
