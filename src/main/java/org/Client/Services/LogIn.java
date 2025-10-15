@@ -20,7 +20,7 @@ public class LogIn {
         String token = GenerateSessionToken();
         UpdateResult result = usersCollection.updateOne(
                 new Document("username", username).append("password", password),
-                Updates.push("orders", token)
+                Updates.push("sessionTokens", token)
         );
         if (result.getModifiedCount() == 0) {
             throw new IncorrectUsernameOrPassword();

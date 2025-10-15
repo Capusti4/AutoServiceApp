@@ -10,21 +10,24 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class HandlerFunctions {
-    public static void SendError(HttpExchange exchange, String errorResp, int errorCode) throws IOException {
+    public static void SendStringResponse(HttpExchange exchange, String response, int code) throws IOException {
         exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=utf-8");
-        exchange.sendResponseHeaders(errorCode, errorResp.getBytes().length);
+        SendResponse(exchange, response, code);
+    }
+    public static void SendJsonResponse(HttpExchange exchange, String json, int code) throws IOException {
+        exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
+        SendResponse(exchange, json, code);
+    }
+    private static void SendResponse(HttpExchange exchange, String response, int code) throws IOException {
+        exchange.sendResponseHeaders(code, response.getBytes().length);
         try (OutputStream os = exchange.getResponseBody()) {
-            os.write(errorResp.getBytes());
+            os.write(response.getBytes());
         }
     }
 
     public static Map<String, Object> GetDataFromPost(HttpExchange exchange) throws IOException {
         if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
-            String resp = "Method Not Allowed";
-            exchange.sendResponseHeaders(405, resp.getBytes().length);
-            try (OutputStream os = exchange.getResponseBody()) {
-                os.write(resp.getBytes());
-            }
+            SendStringResponse(exchange, "Ошибка, метод не разрешен", 409);
             return null;
         }
 
@@ -39,7 +42,6 @@ public class HandlerFunctions {
 
     public static void UnknownException(HttpExchange exchange, Exception e) throws IOException {
         String errorResp = e.getMessage();
-        SendError(exchange, errorResp, 502);
+        SendStringResponse(exchange, errorResp, 502);
     }
-
 }

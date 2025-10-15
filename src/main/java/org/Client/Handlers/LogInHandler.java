@@ -5,7 +5,6 @@ import com.sun.net.httpserver.HttpHandler;
 import org.Exceptions.IncorrectUsernameOrPassword;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Map;
 
 import static org.Client.Handlers.HandlerFunctions.*;
@@ -16,8 +15,7 @@ public class LogInHandler implements HttpHandler{
     public void handle(HttpExchange exchange) throws IOException {
         try {
             Map<String, Object> data = GetDataFromPost(exchange);
-
-            assert data != null;
+            if (data == null) { return; }
             String username = data.get("username").toString();
             String password = data.get("password").toString();
             String[] userInfoAndToken = logIn(username, password);
@@ -28,16 +26,12 @@ public class LogInHandler implements HttpHandler{
                     {
                         "answer": "Юзер успешно вошел",
                         "userData": %s,
-                        "sessionToken": "%s"
+                        "sessionInfo": { "username": "%s", "sessionToken": "%s" }
                     }
-                    """, userInfo, token);
-            exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
-            exchange.sendResponseHeaders(201, response.getBytes().length);
-            try (OutputStream os = exchange.getResponseBody()) {
-                os.write(response.getBytes());
-            }
+                    """, userInfo, username, token);
+            SendJsonResponse(exchange, response, 200);
         } catch (IncorrectUsernameOrPassword e){
-            SendError(exchange, e.getMessage(), 409);
+            SendStringResponse(exchange, e.getMessage(), 409);
         }
         catch (Exception e) {
             UnknownException(exchange, e);

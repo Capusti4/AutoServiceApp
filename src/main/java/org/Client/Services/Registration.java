@@ -10,7 +10,7 @@ import org.Exceptions.UsernameAlreadyExists;
 import org.User;
 import org.bson.Document;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.Client.Services.ServiceFunctions.GenerateSessionToken;
 
@@ -50,7 +50,7 @@ public class Registration {
                 .append("secondName", user.getLastName())
                 .append("phoneNum", user.getPhoneNum())
                 .append("password", user.getPassword())
-                .append("sessionTokens", Arrays.asList(token));
+                .append("sessionTokens", Collections.singletonList(token));
         usersCollection.insertOne(clientDoc);
         mongoClient.close();
         clientDoc.remove("password");
