@@ -1,22 +1,20 @@
-package org.Client.Services;
+package org.Services;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
 import org.Exceptions.IncorrectUsernameOrPassword;
 import org.bson.Document;
 
-import static org.Client.Services.ServiceFunctions.GenerateSessionToken;
+import static org.Services.ServiceFunctions.GenerateSessionToken;
+import static org.Services.ServiceFunctions.GetCollection;
 
 public class LogIn {
-    public static String[] logIn(String username, String password) throws IncorrectUsernameOrPassword {
+    public static String[] logIn(String username, String password, String requestURI) throws Exception {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-        MongoDatabase usersDatabase = mongoClient.getDatabase("Clients");
-        MongoCollection<Document> usersCollection = usersDatabase.getCollection("Clients");
-
+        MongoCollection<Document> usersCollection = GetCollection(mongoClient, requestURI);
         String token = GenerateSessionToken();
         UpdateResult result = usersCollection.updateOne(
                 new Document("username", username).append("password", password),

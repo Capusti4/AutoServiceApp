@@ -1,13 +1,14 @@
-package org.Client.Handlers;
+package org.Handlers;
 
 import com.sun.net.httpserver.*;
 import org.Exceptions.*;
-import org.Client.Services.Registration;
+import org.Services.Registration;
+import org.User;
 
 import java.io.*;
 import java.util.Map;
 
-import static org.Client.Handlers.HandlerFunctions.*;
+import static org.Handlers.HandlerFunctions.*;
 
 public class RegisterHandler implements HttpHandler {
     @Override
@@ -21,8 +22,9 @@ public class RegisterHandler implements HttpHandler {
             String firstName = (String) data.get("firstName");
             String lastName = (String) data.get("lastName");
             String phoneNum = (String) data.get("phoneNum");
+            User user = new User(username, password, firstName, lastName, phoneNum);
 
-            String[] userInfoAndToken = Registration.register(username, password, firstName, lastName, phoneNum);
+            String[] userInfoAndToken = Registration.register(user, String.valueOf(exchange.getRequestURI()));
             String userInfo = userInfoAndToken[0];
             String token = userInfoAndToken[1];
             String response = String.format("""

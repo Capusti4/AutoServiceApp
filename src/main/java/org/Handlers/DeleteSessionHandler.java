@@ -1,4 +1,4 @@
-package org.Client.Handlers;
+package org.Handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -6,8 +6,8 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.util.Map;
 
-import static org.Client.Handlers.HandlerFunctions.*;
-import static org.Client.Services.DeleteToken.DeleteSessionToken;
+import static org.Handlers.HandlerFunctions.*;
+import static org.Services.DeleteToken.DeleteSessionToken;
 
 public class DeleteSessionHandler implements HttpHandler {
     @Override
@@ -17,7 +17,7 @@ public class DeleteSessionHandler implements HttpHandler {
             if (data == null) { return; }
             String username = data.get("username").toString();
             String sessionToken = data.get("sessionToken").toString();
-            DeleteSessionToken(username, sessionToken);
+            DeleteSessionToken(username, sessionToken, String.valueOf(exchange.getRequestURI()));
             SendStringResponse(exchange, "Сессия успешно удалена", 200);
         } catch (Exception e){
             UnknownException(exchange, e);

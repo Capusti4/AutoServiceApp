@@ -1,9 +1,8 @@
-package org.Client.Services;
+package org.Services;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import org.Exceptions.IncorrectUsername;
 import org.Exceptions.PhoneNumberAlreadyExists;
 import org.Exceptions.UsernameAlreadyExists;
@@ -12,20 +11,14 @@ import org.bson.Document;
 
 import java.util.Collections;
 
-import static org.Client.Services.ServiceFunctions.GenerateSessionToken;
+import static org.Services.ServiceFunctions.GenerateSessionToken;
+import static org.Services.ServiceFunctions.GetCollection;
 
 public class Registration {
-    public static String[] register(String username, String userFirstName, String userLastName, String userPhoneNum, String userPassword) {
-        User user = new User(username, userFirstName, userLastName, userPhoneNum, userPassword);
-        return addUser(user);
-    }
-
-    static String[] addUser(User user) {
+    public static String[] register(User user, String requestURI) throws Exception {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-        MongoDatabase usersDatabase = mongoClient.getDatabase("Clients");
-        MongoCollection<Document> usersCollection = usersDatabase.getCollection("Clients");
+        MongoCollection<Document> usersCollection = GetCollection(mongoClient, requestURI);
         String username = user.getUsername();
-
         Document found = usersCollection.find(new Document("username", username)).first();
         if (found != null) {
             throw new UsernameAlreadyExists();

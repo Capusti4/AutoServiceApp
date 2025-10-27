@@ -1,19 +1,19 @@
-package org.Client.Services;
+package org.Services;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import static org.Services.ServiceFunctions.GetCollection;
+
 public class DeleteToken {
-    public static void DeleteSessionToken(String username, String token) {
+    public static void DeleteSessionToken(String username, String token, String requestURI) throws Exception {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-        MongoDatabase usersDatabase = mongoClient.getDatabase("Clients");
-        MongoCollection<Document> usersCollection = usersDatabase.getCollection("Clients");
+        MongoCollection<Document> usersCollection = GetCollection(mongoClient, requestURI);
 
         Bson filter = Filters.eq("username", username);
         Bson update = Updates.pull("sessionTokens", token);
