@@ -1,18 +1,15 @@
 package org;
 
-import com.google.gson.internal.LinkedTreeMap;
 import org.Exceptions.IncorrectOrderID;
+import org.bson.types.ObjectId;
 
 public class Order {
     private final int typeID;
     private final String type;
-    private final String clientUsername;
-    private final String clientFirstName;
-    private final String clientLastName;
-    private final String clientPhoneNum;
+    private final ObjectId customerId;
     private final String comment;
 
-    public Order(int typeID, LinkedTreeMap<String, String> userInfo, String comment) {
+    public Order(int typeID, ObjectId customerId, String comment) {
         switch (typeID) {
             case 1:
                 this.type = "Покраска авто";
@@ -36,28 +33,19 @@ public class Order {
                 throw new IncorrectOrderID();
         }
         this.typeID = typeID;
-        this.clientUsername = userInfo.get("username");
-        this.clientFirstName = userInfo.get("firstName");
-        this.clientLastName = userInfo.get("LastName");
-        this.clientPhoneNum = userInfo.get("phoneNum");
+        this.customerId = customerId;
         this.comment = comment;
     }
 
-    public Order(String type, LinkedTreeMap<String, String> userInfo, String comment) {
+    public Order(String type, ObjectId customerId, String comment) {
         this.typeID = 0;
         this.type = type;
-        this.clientUsername = userInfo.get("username");
-        this.clientFirstName = userInfo.get("firstName");
-        this.clientLastName = userInfo.get("LastName");
-        this.clientPhoneNum = userInfo.get("phoneNum");
+        this.customerId = customerId;
         this.comment = comment;
     }
 
     public int getTypeID() { return typeID; }
-    public String getClientUsername() { return clientUsername; }
     public String getType() { return type; }
     public String getComment() { return comment; }
-    public String getClientFirstName() { return clientFirstName; }
-    public String getClientLastName() { return clientLastName; }
-    public String getClientPhoneNum() { return clientPhoneNum; }
+    public ObjectId getCustomerId() { return customerId; }
 }

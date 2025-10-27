@@ -11,10 +11,7 @@ public class OrderCreator {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> collection = mongoClient.getDatabase("Orders").getCollection("Orders");
         Document orderDoc = new Document()
-                .append("clientUsername", order.getClientUsername())
-                .append("clientFirstName", order.getClientFirstName())
-                .append("clientLastName", order.getClientLastName())
-                .append("clientPhoneNum", order.getClientPhoneNum())
+                .append("customerId", order.getCustomerId())
                 .append("typeID", order.getTypeID())
                 .append("type", order.getType())
                 .append("comment", order.getComment());

@@ -4,12 +4,14 @@ import com.google.gson.internal.LinkedTreeMap;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.Order;
+import org.bson.types.ObjectId;
 
 import java.io.IOException;
 import java.util.Map;
 
 import static org.Handlers.HandlerFunctions.*;
 import static org.Services.OrderCreator.CreateOrder;
+import static org.Services.UserIdGiver.GetUserId;
 
 public class CreateOrderHandler implements HttpHandler {
     @Override
@@ -21,12 +23,15 @@ public class CreateOrderHandler implements HttpHandler {
             }
             int orderTypeId = Integer.parseInt((String) data.get("orderTypeId"));
             String comment = (String) data.get("comment");
-            LinkedTreeMap<String, String> userInfo = (LinkedTreeMap<String, String>) data.get("userInfo");
+            LinkedTreeMap<String, String> userSessionInfo = (LinkedTreeMap<String, String>) data.get("userSessionInfo");
+            String username = userSessionInfo.get("username");
+            String sessionToken = userSessionInfo.get("sessionToken");
+            ObjectId userId = GetUserId(username, sessionToken);
             Order order;
             if (orderTypeId == 0) {
-                order = new Order((String) data.get("orderType"), userInfo, comment);
+                order = new Order((String) data.get("orderType"), userId, comment);
             } else {
-                order = new Order(orderTypeId, userInfo, comment);
+                order = new Order(orderTypeId, userId, comment);
             }
             CreateOrder(order);
             SendStringResponse(exchange, "Заказ успешно создан", 201);

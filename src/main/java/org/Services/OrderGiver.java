@@ -22,7 +22,16 @@ public class OrderGiver {
                 MongoCollection<Document> ordersCollection = mongoClient.getDatabase("Orders").getCollection("Orders");
                 ArrayList<String> ordersList = new ArrayList<>();
                 for (Document doc : ordersCollection.find()) {
-                    ordersList.add(doc.toJson());
+                    MongoCollection<Document> clientsCollection = mongoClient.getDatabase("Users").getCollection("Clients");
+                    Document customer = clientsCollection.find(new Document("_id", doc.get("customerId"))).first();
+                    if (customer == null) {
+                        doc.append("customerId", null);
+                    } else {
+                        doc.append("customerFirstName", customer.get("firstName"));
+                        doc.append("customerLastName", customer.get("lastName"));
+                        doc.append("customerPhoneNum", customer.get("phoneNum"));
+                        ordersList.add(doc.toJson());
+                    }
                 }
                 mongoClient.close();
                 return ordersList;

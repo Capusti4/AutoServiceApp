@@ -40,7 +40,7 @@ public class Registration {
         Document clientDoc = new Document()
                 .append("username", username)
                 .append("firstName", user.getFirstName())
-                .append("secondName", user.getLastName())
+                .append("lastName", user.getLastName())
                 .append("phoneNum", user.getPhoneNum())
                 .append("password", user.getPassword())
                 .append("sessionTokens", Collections.singletonList(token));
