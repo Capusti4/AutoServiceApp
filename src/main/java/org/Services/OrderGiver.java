@@ -25,7 +25,7 @@ public class OrderGiver {
                     MongoCollection<Document> clientsCollection = mongoClient.getDatabase("Users").getCollection("Clients");
                     Document customer = clientsCollection.find(new Document("_id", doc.get("customerId"))).first();
                     if (customer == null) {
-                        doc.append("customerId", null);
+                        ordersCollection.deleteOne(doc);
                     } else {
                         doc.append("customerFirstName", customer.get("firstName"));
                         doc.append("customerLastName", customer.get("lastName"));
