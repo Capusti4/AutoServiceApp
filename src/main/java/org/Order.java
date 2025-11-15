@@ -1,6 +1,6 @@
 package org;
 
-import org.Exceptions.IncorrectOrderID;
+import org.Exceptions.IncorrectOrderTypeId;
 import org.bson.types.ObjectId;
 
 public class Order {
@@ -9,7 +9,7 @@ public class Order {
     private final ObjectId customerId;
     private final String comment;
 
-    public Order(int typeID, ObjectId customerId, String comment) {
+    public Order(int typeID, ObjectId customerId, String comment) throws IncorrectOrderTypeId {
         switch (typeID) {
             case 1:
                 this.type = "Покраска авто";
@@ -30,7 +30,7 @@ public class Order {
                 this.type = "Ремонт внутренней детали";
                 break;
             default:
-                throw new IncorrectOrderID();
+                throw new IncorrectOrderTypeId();
         }
         this.typeID = typeID;
         this.customerId = customerId;

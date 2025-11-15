@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import static org.Services.ServiceFunctions.GetCollection;
 
 public class TokenChecker {
-    public static String CheckToken(String username, String token, String requestURI) throws Exception {
+    public static Document CheckToken(String username, String token, String requestURI) throws Exception {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> usersCollection = GetCollection(mongoClient, requestURI);
         Document found = usersCollection.find(new Document("username", username)).first();
@@ -20,9 +20,7 @@ public class TokenChecker {
                 if (sessionToken.equals(token)) {
                     found.remove("sessionTokens");
                     found.remove("password");
-                    found.remove("_id");
-                    Document responseDoc = new Document("userData", found).append("sessionToken", token);
-                    return responseDoc.toJson();
+                    return new Document("userData", found).append("sessionToken", token);
                 }
             }
         }

@@ -19,7 +19,7 @@ public class OrderGiver {
         }
         for (Object token : found.get("sessionTokens", ArrayList.class)) {
             if (sessionToken.equals(token)) {
-                MongoCollection<Document> ordersCollection = mongoClient.getDatabase("Orders").getCollection("Orders");
+                MongoCollection<Document> ordersCollection = mongoClient.getDatabase("Orders").getCollection("NewOrders");
                 ArrayList<String> ordersList = new ArrayList<>();
                 for (Document doc : ordersCollection.find()) {
                     MongoCollection<Document> clientsCollection = mongoClient.getDatabase("Users").getCollection("Clients");

@@ -9,7 +9,7 @@ import org.bson.Document;
 public class OrderCreator {
     public static void CreateOrder(Order order) {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-        MongoCollection<Document> collection = mongoClient.getDatabase("Orders").getCollection("Orders");
+        MongoCollection<Document> collection = mongoClient.getDatabase("Orders").getCollection("NewOrders");
         Document orderDoc = new Document()
                 .append("customerId", order.getCustomerId())
                 .append("typeID", order.getTypeID())

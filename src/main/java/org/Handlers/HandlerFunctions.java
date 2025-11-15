@@ -41,7 +41,7 @@ public class HandlerFunctions {
     }
 
     public static void UnknownException(HttpExchange exchange, Exception e) throws IOException {
-        String errorResp = e.getMessage();
+        String errorResp = "Произошла неизвестная ошибка: " + e.getMessage() + "\nСообщите об этой ошибке в поддержку";
         SendStringResponse(exchange, errorResp, 502);
     }
 }

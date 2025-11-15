@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.Handlers.HandlerFunctions.*;
 import static org.Services.TokenChecker.CheckToken;
@@ -18,7 +19,7 @@ public class CheckSessionHandler implements HttpHandler {
         String username = data.get("username").toString();
         String sessionToken = data.get("sessionToken").toString();
         try{
-            String userInfo = CheckToken(username, sessionToken, String.valueOf(exchange.getRequestURI()));
+            String userInfo = Objects.requireNonNull(CheckToken(username, sessionToken, String.valueOf(exchange.getRequestURI()))).toJson();
             if (userInfo != null){
                 SendJsonResponse(exchange, userInfo, 200);
             }else{

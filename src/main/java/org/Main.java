@@ -20,6 +20,7 @@ public class Main {
         server.createContext("/worker/checkSession", new CheckSessionHandler());
         server.createContext("/worker/deleteSession", new DeleteSessionHandler());
         server.createContext("/worker/getOrdersList", new GetOrdersListHandler());
+        server.createContext("/worker/startOrder", new StartOrderHandler());
 
         server.setExecutor(null);
         server.start();
