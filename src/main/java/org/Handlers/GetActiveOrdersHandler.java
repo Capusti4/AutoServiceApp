@@ -25,7 +25,7 @@ public class GetActiveOrdersHandler implements HttpHandler {
             Document workerData = (Document) Objects.requireNonNull(GetUserData(username, sessionToken, "/worker/")).get("userData");
 
             if (workerData == null) {
-                SendStringResponse(exchange, "Токен сессии истек", 400);
+                SendStringResponse(exchange, "Токен сессии истек", 409);
                 return;
             }
 
@@ -34,6 +34,8 @@ public class GetActiveOrdersHandler implements HttpHandler {
             SendJsonResponse(exchange, activeOrders.toString(), 200);
         } catch (Exception e){
             UnknownException(exchange, e);
+        } finally {
+            exchange.close();
         }
     }
 }

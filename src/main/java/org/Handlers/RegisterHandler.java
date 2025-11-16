@@ -14,26 +14,9 @@ public class RegisterHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         try {
-            Map<String, Object> data = GetDataFromPost(exchange);
-
-            assert data != null;
-            String username = (String) data.get("username");
-            String password = (String) data.get("password");
-            String firstName = (String) data.get("firstName");
-            String lastName = (String) data.get("lastName");
-            String phoneNum = (String) data.get("phoneNum");
-            User user = new User(username, password, firstName, lastName, phoneNum);
-
-            String[] userInfoAndToken = Registration.register(user, String.valueOf(exchange.getRequestURI()));
-            String userInfo = userInfoAndToken[0];
-            String token = userInfoAndToken[1];
-            String response = String.format("""
-                    {
-                        "answer": "Юзер создан успешно",
-                        "userData": %s,
-                        "sessionInfo": { "username": "%s", "sessionToken": "%s" }
-                    }
-                    """, userInfo, username, token);
+            User user = CreateUser(exchange);
+            if (user == null) { return; }
+            String response = CreateResponse(user, exchange);
             SendJsonResponse(exchange, response, 201);
         } catch (IncorrectName | IncorrectPhoneNumber | UsernameAlreadyExists | IncorrectUsername |
                  PhoneNumberAlreadyExists e) {
@@ -45,5 +28,29 @@ public class RegisterHandler implements HttpHandler {
         } finally {
             exchange.close();
         }
+    }
+
+    static User CreateUser(HttpExchange exchange) throws IOException {
+        Map<String, Object> data = GetDataFromPost(exchange);
+        if (data == null) { return null; }
+        String username = (String) data.get("username");
+        String password = (String) data.get("password");
+        String firstName = (String) data.get("firstName");
+        String lastName = (String) data.get("lastName");
+        String phoneNum = (String) data.get("phoneNum");
+        return new User(username, password, firstName, lastName, phoneNum);
+    }
+
+    static String CreateResponse(User user, HttpExchange exchange) throws Exception {
+        String[] userInfoAndToken = Registration.register(user, String.valueOf(exchange.getRequestURI()));
+        String userInfo = userInfoAndToken[0];
+        String token = userInfoAndToken[1];
+        return String.format("""
+                {
+                    "answer": "Юзер создан успешно",
+                    "userData": %s,
+                    "sessionInfo": { "username": "%s", "sessionToken": "%s" }
+                }
+                """, userInfo, user.getUsername(), token);
     }
 }

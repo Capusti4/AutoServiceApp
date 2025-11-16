@@ -16,12 +16,9 @@ public class UserIdGiver {
         MongoCollection<Document> usersCollection = GetCollection(mongoClient, "/client/");
         Document found = usersCollection.find(new Document("username", username)).first();
         mongoClient.close();
-        if (found != null) {
-            for (Object token : found.get("sessionTokens", ArrayList.class)) {
-                if (token.equals(sessionToken)) {
-                    return (ObjectId) found.get("_id");
-                }
-            }
+        if (found == null) { return null; }
+        for (Object token : found.get("sessionTokens", ArrayList.class)) {
+            if (token.equals(sessionToken)) { return (ObjectId) found.get("_id"); }
         }
         return null;
     }

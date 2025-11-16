@@ -21,6 +21,8 @@ public class DeleteSessionHandler implements HttpHandler {
             SendStringResponse(exchange, "Сессия успешно удалена", 200);
         } catch (Exception e){
             UnknownException(exchange, e);
+        } finally {
+            exchange.close();
         }
     }
 }

@@ -5,11 +5,18 @@ import org.bson.types.ObjectId;
 
 public class Order {
     private final int typeID;
-    private final String type;
+    private String type;
     private final ObjectId customerId;
     private final String comment;
 
     public Order(int typeID, ObjectId customerId, String comment) throws IncorrectOrderTypeId {
+        SwitchTypeId();
+        this.typeID = typeID;
+        this.customerId = customerId;
+        this.comment = comment;
+    }
+
+    void SwitchTypeId() throws IncorrectOrderTypeId {
         switch (typeID) {
             case 1:
                 this.type = "Покраска авто";
@@ -32,9 +39,6 @@ public class Order {
             default:
                 throw new IncorrectOrderTypeId();
         }
-        this.typeID = typeID;
-        this.customerId = customerId;
-        this.comment = comment;
     }
 
     public Order(String type, ObjectId customerId, String comment) {

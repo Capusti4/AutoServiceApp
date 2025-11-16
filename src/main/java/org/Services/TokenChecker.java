@@ -15,13 +15,12 @@ public class TokenChecker {
         MongoCollection<Document> usersCollection = GetCollection(mongoClient, requestURI);
         Document found = usersCollection.find(new Document("username", username)).first();
         mongoClient.close();
-        if (found != null) {
-            for (Object token : found.get("sessionTokens", ArrayList.class)) {
-                if (sessionToken.equals(token)) {
-                    found.remove("sessionTokens");
-                    found.remove("password");
-                    return new Document("userData", found).append("sessionToken", token);
-                }
+        if (found == null) { return null; }
+        for (Object token : found.get("sessionTokens", ArrayList.class)) {
+            if (sessionToken.equals(token)) {
+                found.remove("sessionTokens");
+                found.remove("password");
+                return new Document("userData", found).append("sessionToken", token);
             }
         }
         return null;

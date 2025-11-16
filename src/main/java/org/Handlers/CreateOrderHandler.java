@@ -17,28 +17,32 @@ public class CreateOrderHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         try {
-            Map<String, Object> data = GetDataFromPost(exchange);
-            if (data == null) {
-                return;
-            }
-            int orderTypeId = Integer.parseInt((String) data.get("orderTypeId"));
-            String comment = (String) data.get("comment");
-            LinkedTreeMap<String, String> userSessionInfo = (LinkedTreeMap<String, String>) data.get("userSessionInfo");
-            String username = userSessionInfo.get("username");
-            String sessionToken = userSessionInfo.get("sessionToken");
-            ObjectId userId = GetUserId(username, sessionToken);
-            Order order;
-            if (orderTypeId == 0) {
-                order = new Order((String) data.get("orderType"), userId, comment);
-            } else {
-                order = new Order(orderTypeId, userId, comment);
-            }
-            CreateOrder(order);
-            SendStringResponse(exchange, "Заказ успешно создан", 201);
+            createOrder(exchange);
         } catch (Exception e) {
             UnknownException(exchange, e);
         } finally {
             exchange.close();
         }
+    }
+
+    static void createOrder(HttpExchange exchange) throws Exception {
+        Map<String, Object> data = GetDataFromPost(exchange);
+        if (data == null) {
+            return;
+        }
+        int orderTypeId = Integer.parseInt((String) data.get("orderTypeId"));
+        String comment = (String) data.get("comment");
+        LinkedTreeMap<String, String> userSessionInfo = (LinkedTreeMap<String, String>) data.get("userSessionInfo");
+        String username = userSessionInfo.get("username");
+        String sessionToken = userSessionInfo.get("sessionToken");
+        ObjectId userId = GetUserId(username, sessionToken);
+        Order order;
+        if (orderTypeId == 0) {
+            order = new Order((String) data.get("orderType"), userId, comment);
+        } else {
+            order = new Order(orderTypeId, userId, comment);
+        }
+        CreateOrder(order);
+        SendStringResponse(exchange, "Заказ успешно создан", 201);
     }
 }

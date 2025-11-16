@@ -12,21 +12,29 @@ import static org.Services.TokenChecker.GetUserData;
 
 public class CheckSessionHandler implements HttpHandler {
     @Override
-    public void handle(HttpExchange exchange) throws IOException{
-        Map<String, Object> data = GetDataFromPost(exchange);
-        if (data == null) { return; }
+    public void handle(HttpExchange exchange) throws IOException {
+        try {
+            Map<String, Object> data = GetDataFromPost(exchange);
+            if (data == null) { return; }
 
-        String username = data.get("username").toString();
-        String sessionToken = data.get("sessionToken").toString();
-        try{
+            String username = data.get("username").toString();
+            String sessionToken = data.get("sessionToken").toString();
+
             String userInfo = Objects.requireNonNull(GetUserData(username, sessionToken, String.valueOf(exchange.getRequestURI()))).toJson();
-            if (userInfo != null){
-                SendJsonResponse(exchange, userInfo, 200);
-            }else{
-                SendStringResponse(exchange, "Срок действия сессии истек", 409);
-            }
-        } catch (Exception e){
+
+            SendResponse(exchange, userInfo);
+        } catch (Exception e) {
             UnknownException(exchange, e);
+        } finally {
+            exchange.close();
+        }
+    }
+
+    static void SendResponse(HttpExchange exchange, String userInfo) throws Exception {
+        if (userInfo != null) {
+            SendJsonResponse(exchange, userInfo, 200);
+        } else {
+            SendStringResponse(exchange, "Срок действия сессии истек", 409);
         }
     }
 }

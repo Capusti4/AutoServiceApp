@@ -21,7 +21,7 @@ public class GetNewOrdersHandler implements HttpHandler {
             String username = (String) data.get("username");
             String sessionToken = (String) data.get("sessionToken");
             if (GetUserData(username, sessionToken, "/worker/") == null) {
-                SendStringResponse(exchange, "Токен сессии истек", 400);
+                SendStringResponse(exchange, "Токен сессии истек", 409);
                 return;
             }
 
@@ -29,6 +29,8 @@ public class GetNewOrdersHandler implements HttpHandler {
             SendJsonResponse(exchange, "{\"orders\": " + Arrays.toString(orders) + "}", 200);
         } catch (Exception e) {
             UnknownException(exchange, e);
+        } finally {
+            exchange.close();
         }
     }
 }

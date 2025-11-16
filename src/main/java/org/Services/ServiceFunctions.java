@@ -6,6 +6,7 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Base64;
 
 public class ServiceFunctions {
@@ -26,6 +27,21 @@ public class ServiceFunctions {
             return usersDatabase.getCollection("Workers");
         } else {
             throw new Exception("Недопустимый URI");
+        }
+    }
+
+    static void MakeOrdersList(ArrayList<String> orders,
+                               MongoCollection<Document> clientsCollection,
+                               MongoCollection<Document> ordersCollection,
+                               Document order) {
+        Document customer = clientsCollection.find(new Document("_id", order.get("customerId"))).first();
+        if (customer == null) {
+            ordersCollection.deleteOne(order);
+        } else {
+            order.append("customerFirstName", customer.get("firstName"));
+            order.append("customerLastName", customer.get("lastName"));
+            order.append("customerPhoneNum", customer.get("phoneNum"));
+            orders.add(order.toJson());
         }
     }
 }

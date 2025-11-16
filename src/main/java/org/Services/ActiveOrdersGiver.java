@@ -8,6 +8,8 @@ import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 
+import static org.Services.ServiceFunctions.MakeOrdersList;
+
 
 public class ActiveOrdersGiver {
     public static ArrayList<String> GetActiveOrders(ObjectId workerId) {
@@ -18,15 +20,7 @@ public class ActiveOrdersGiver {
         ArrayList<String> activeOrders = new ArrayList<>();
         for (Document activeOrder : activeOrdersCollection.find()) {
             if (activeOrder.get("workerId").equals(workerId)) {
-                Document customer = clientsCollection.find(new Document("_id", activeOrder.get("customerId"))).first();
-                if (customer == null) {
-                    activeOrdersCollection.deleteOne(activeOrder);
-                } else {
-                    activeOrder.append("customerFirstName", customer.get("firstName"));
-                    activeOrder.append("customerLastName", customer.get("lastName"));
-                    activeOrder.append("customerPhoneNum", customer.get("phoneNum"));
-                    activeOrders.add(activeOrder.toJson());
-                }
+                MakeOrdersList(activeOrders, clientsCollection, activeOrdersCollection, activeOrder);
             }
         }
         mongoClient.close();
