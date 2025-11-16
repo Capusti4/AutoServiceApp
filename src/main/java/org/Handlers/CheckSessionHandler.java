@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.Handlers.HandlerFunctions.*;
-import static org.Services.TokenChecker.CheckToken;
+import static org.Services.TokenChecker.GetUserData;
 
 public class CheckSessionHandler implements HttpHandler {
     @Override
@@ -19,7 +19,7 @@ public class CheckSessionHandler implements HttpHandler {
         String username = data.get("username").toString();
         String sessionToken = data.get("sessionToken").toString();
         try{
-            String userInfo = Objects.requireNonNull(CheckToken(username, sessionToken, String.valueOf(exchange.getRequestURI()))).toJson();
+            String userInfo = Objects.requireNonNull(GetUserData(username, sessionToken, String.valueOf(exchange.getRequestURI()))).toJson();
             if (userInfo != null){
                 SendJsonResponse(exchange, userInfo, 200);
             }else{

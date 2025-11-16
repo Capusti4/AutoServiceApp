@@ -11,7 +11,7 @@ import java.util.Map;
 
 import static org.Handlers.HandlerFunctions.*;
 import static org.Services.OrderStarter.StartOrder;
-import static org.Services.TokenChecker.CheckToken;
+import static org.Services.TokenChecker.GetUserData;
 
 public class StartOrderHandler implements HttpHandler {
     @Override
@@ -23,7 +23,7 @@ public class StartOrderHandler implements HttpHandler {
             }
             String username = (String) data.get("username");
             String sessionToken = (String) data.get("sessionToken");
-            Document workerInfo = CheckToken(username, sessionToken, "/worker/");
+            Document workerInfo = GetUserData(username, sessionToken, "/worker/");
             if (workerInfo == null) {
                 SendStringResponse(exchange,"Токен сессии недействителен", 400);
                 return;

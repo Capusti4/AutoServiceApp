@@ -10,13 +10,13 @@ import java.util.ArrayList;
 import static org.Services.ServiceFunctions.GetCollection;
 
 public class TokenChecker {
-    public static Document CheckToken(String username, String token, String requestURI) throws Exception {
+    public static Document GetUserData(String username, String sessionToken, String requestURI) throws Exception {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> usersCollection = GetCollection(mongoClient, requestURI);
         Document found = usersCollection.find(new Document("username", username)).first();
         mongoClient.close();
         if (found != null) {
-            for (Object sessionToken : found.get("sessionTokens", ArrayList.class)) {
+            for (Object token : found.get("sessionTokens", ArrayList.class)) {
                 if (sessionToken.equals(token)) {
                     found.remove("sessionTokens");
                     found.remove("password");

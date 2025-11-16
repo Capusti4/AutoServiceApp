@@ -9,9 +9,10 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.Handlers.HandlerFunctions.*;
-import static org.Services.OrderGiver.GetOrdersList;
+import static org.Services.NewOrdersGiver.GetNewOrdersList;
+import static org.Services.TokenChecker.GetUserData;
 
-public class GetOrdersListHandler implements HttpHandler {
+public class GetNewOrdersHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         try {
@@ -19,7 +20,12 @@ public class GetOrdersListHandler implements HttpHandler {
             if (data == null) { return; }
             String username = (String) data.get("username");
             String sessionToken = (String) data.get("sessionToken");
-            String[] orders = Objects.requireNonNull(GetOrdersList(username, sessionToken)).toArray(new String[0]);
+            if (GetUserData(username, sessionToken, "/worker/") == null) {
+                SendStringResponse(exchange, "Токен сессии истек", 400);
+                return;
+            }
+
+            String[] orders = Objects.requireNonNull(GetNewOrdersList(username)).toArray(new String[0]);
             SendJsonResponse(exchange, "{\"orders\": " + Arrays.toString(orders) + "}", 200);
         } catch (Exception e) {
             UnknownException(exchange, e);
