@@ -1,0 +1,22 @@
+package org.Services;
+
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+
+public class NotificationsAmountGiver {
+    public static int GetNotificationsAmount(ObjectId userId) {
+        int amount = 0;
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoCollection<Document> notificationsCollection = mongoClient.getDatabase("Users").getCollection("Notifications");
+        for (Document notification : notificationsCollection.find()){
+            if (notification.get("userId").equals(userId) && !(boolean) notification.get("isRead")){
+                amount++;
+            }
+        }
+        mongoClient.close();
+        return amount;
+    }
+}

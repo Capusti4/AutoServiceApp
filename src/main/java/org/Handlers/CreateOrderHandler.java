@@ -1,6 +1,5 @@
 package org.Handlers;
 
-import com.google.gson.internal.LinkedTreeMap;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.Order;
@@ -32,10 +31,7 @@ public class CreateOrderHandler implements HttpHandler {
         }
         int orderTypeId = Integer.parseInt((String) data.get("orderTypeId"));
         String comment = (String) data.get("comment");
-        LinkedTreeMap<String, String> userSessionInfo = (LinkedTreeMap<String, String>) data.get("userSessionInfo");
-        String username = userSessionInfo.get("username");
-        String sessionToken = userSessionInfo.get("sessionToken");
-        ObjectId userId = GetUserId(username, sessionToken);
+        ObjectId userId = GetUserId((Map<String, Object>) data.get("userSessionInfo"));
         Order order;
         if (orderTypeId == 0) {
             order = new Order((String) data.get("orderType"), userId, comment);

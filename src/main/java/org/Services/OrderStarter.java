@@ -7,6 +7,8 @@ import org.Exceptions.IncorrectOrderId;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import static org.Services.NotificationsCreator.CreateNotification;
+
 public class OrderStarter {
     public static void StartOrder(ObjectId orderId, ObjectId workerId) throws Exception {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
@@ -19,6 +21,8 @@ public class OrderStarter {
         MongoCollection<Document> activeOrdersCollection = mongoClient.getDatabase("Orders").getCollection("ActiveOrders");
         activeOrdersCollection.insertOne(orderInfo);
 
+        String text = "Ваш заказ \"" + orderInfo.get("type") + "\" с комментарием \"" + orderInfo.get("comment") + "\" успешно взят в работу!";
+        CreateNotification((ObjectId) orderInfo.get("customerId"), 2, text);
         mongoClient.close();
     }
 }

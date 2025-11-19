@@ -7,11 +7,14 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import static org.Services.ServiceFunctions.GetCollection;
 
 public class UserIdGiver {
-    public static ObjectId GetUserId(String username, String sessionToken) throws Exception {
+    public static ObjectId GetUserId(Map<String, Object> data) throws Exception {
+        String username = (String) data.get("username");
+        String sessionToken = (String) data.get("sessionToken");
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> usersCollection = GetCollection(mongoClient, "/client/");
         Document found = usersCollection.find(new Document("username", username)).first();
