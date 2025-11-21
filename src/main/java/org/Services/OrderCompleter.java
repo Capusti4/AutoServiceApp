@@ -21,6 +21,7 @@ public class OrderCompleter {
         completedOrdersCollection.insertOne(found);
         CreateNotification(
                 (ObjectId) found.get("customerId"),
+                (ObjectId) found.get("workerId"),
                 3,
                 "Ваш заказ \"" + found.get("type") + "\" с комментарием \"" + found.get("comment") +"\" успешно завершен!"
         );

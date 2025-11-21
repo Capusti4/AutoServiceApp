@@ -1,6 +1,7 @@
 package org.Services;
 
 import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
@@ -43,5 +44,13 @@ public class ServiceFunctions {
             order.append("customerPhoneNum", customer.get("phoneNum"));
             orders.add(order.toJson());
         }
+    }
+
+    static Document GetUserDocument(String username, String requestURI) throws Exception {
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoCollection<Document> usersCollection = GetCollection(mongoClient, requestURI);
+        Document found = usersCollection.find(new Document("username", username)).first();
+        mongoClient.close();
+        return found;
     }
 }

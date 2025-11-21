@@ -1,25 +1,16 @@
 package org.Services;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.Map;
 
-import static org.Services.ServiceFunctions.GetCollection;
-
 public class UserIdGiver {
-    public static ObjectId GetUserId(Map<String, Object> data) throws Exception {
+    public static ObjectId GetUserId(Map<String, Object> data, String requestURI) throws Exception {
         String username = (String) data.get("username");
         String sessionToken = (String) data.get("sessionToken");
-        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-        MongoCollection<Document> usersCollection = GetCollection(mongoClient, "/client/");
-        Document found = usersCollection.find(new Document("username", username)).first();
-        mongoClient.close();
-        if (found == null) { return null; }
+        Document found = ServiceFunctions.GetUserDocument(username, requestURI);
         for (Object token : found.get("sessionTokens", ArrayList.class)) {
             if (token.equals(sessionToken)) { return (ObjectId) found.get("_id"); }
         }

@@ -22,7 +22,7 @@ public class OrderStarter {
         activeOrdersCollection.insertOne(orderInfo);
 
         String text = "Ваш заказ \"" + orderInfo.get("type") + "\" с комментарием \"" + orderInfo.get("comment") + "\" успешно взят в работу!";
-        CreateNotification((ObjectId) orderInfo.get("customerId"), 2, text);
+        CreateNotification((ObjectId) orderInfo.get("customerId"), (ObjectId) orderInfo.get("workerId"), 2, text);
         mongoClient.close();
     }
 }

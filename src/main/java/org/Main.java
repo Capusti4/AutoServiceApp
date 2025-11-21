@@ -25,6 +25,7 @@ public class Main {
         server.createContext("/client/getNotifications", new GetNotificationsHandler());
         server.createContext("/client/getNotificationsAmount", new GetNotificationsAmountHandler());
         server.createContext("/client/readNotification", new ReadNotificationHandler());
+        server.createContext("/client/sendFeedback", new SendFeedbackHandler());
     }
 
     public static void CreateWorkerContext(HttpServer server) {
@@ -39,5 +40,6 @@ public class Main {
         server.createContext("/worker/getNotifications", new GetNotificationsHandler());
         server.createContext("/worker/getNotificationsAmount", new GetNotificationsAmountHandler());
         server.createContext("/worker/readNotification", new ReadNotificationHandler());
+        server.createContext("/worker/sendFeedback", new SendFeedbackHandler());
     }
 }

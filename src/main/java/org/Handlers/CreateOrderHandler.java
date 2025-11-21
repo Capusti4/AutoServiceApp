@@ -31,7 +31,7 @@ public class CreateOrderHandler implements HttpHandler {
         }
         int orderTypeId = Integer.parseInt((String) data.get("orderTypeId"));
         String comment = (String) data.get("comment");
-        ObjectId userId = GetUserId((Map<String, Object>) data.get("userSessionInfo"));
+        ObjectId userId = GetUserId((Map<String, Object>) data.get("userSessionInfo"), exchange.getRequestURI().toString());
         Order order;
         if (orderTypeId == 0) {
             order = new Order((String) data.get("orderType"), userId, comment);

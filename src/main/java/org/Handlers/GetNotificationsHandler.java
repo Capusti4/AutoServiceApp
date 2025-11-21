@@ -17,7 +17,7 @@ public class GetNotificationsHandler implements HttpHandler {
         try {
             Map<String, Object> data = GetDataFromPost(exchange);
             if (data == null) { return; }
-            var userId = GetUserId(data);
+            var userId = GetUserId(data, exchange.getRequestURI().toString());
             ArrayList<String> notifications = GetNotifications(userId);
             SendJsonResponse(exchange, notifications.toString(), 200);
         } catch (Exception e) {

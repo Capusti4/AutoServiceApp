@@ -16,7 +16,7 @@ public class GetNotificationsAmountHandler implements HttpHandler {
         try {
             Map<String, Object> data = GetDataFromPost(exchange);
             if (data == null) { return; }
-            var userId = GetUserId(data);
+            var userId = GetUserId(data, exchange.getRequestURI().toString());
             int amount = GetNotificationsAmount(userId);
             SendJsonResponse(exchange, amount + "", 200);
         } catch (Exception e) {
