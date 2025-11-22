@@ -2,17 +2,15 @@ package org.Handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.Handlers.HandlerFunctions.*;
 import static org.Services.ActiveOrdersGiver.GetActiveOrders;
-import static org.Services.TokenChecker.GetUserData;
+import static org.Services.UserIdGiver.GetUserId;
 
 public class GetActiveOrdersHandler implements HttpHandler {
     @Override
@@ -20,16 +18,8 @@ public class GetActiveOrdersHandler implements HttpHandler {
         try {
             Map<String, Object> data = GetDataFromPost(exchange);
             if (data == null) { return; }
-            String username = (String) data.get("username");
-            String sessionToken = (String) data.get("sessionToken");
-            Document workerData = (Document) Objects.requireNonNull(GetUserData(username, sessionToken, "/worker/")).get("userData");
-
-            if (workerData == null) {
-                SendStringResponse(exchange, "Токен сессии истек", 409);
-                return;
-            }
-
-            ObjectId workerId = (ObjectId) workerData.get("_id");
+            ObjectId workerId = GetUserId(data, exchange.getRequestURI().toString());
+            if (UserIdIsNotCorrect(workerId, exchange)) { return; }
             ArrayList<String> activeOrders = GetActiveOrders(workerId);
             SendJsonResponse(exchange, activeOrders.toString(), 200);
         } catch (Exception e){

@@ -11,7 +11,7 @@ import static org.Services.ServiceFunctions.GetCollection;
 import static org.Services.ServiceFunctions.MakeOrdersList;
 
 public class NewOrdersGiver {
-    public static ArrayList<String> GetNewOrdersList(String username) throws Exception {
+    public static String[] GetNewOrdersList(String username) throws Exception {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> workersCollection = GetCollection(mongoClient, "/worker/");
         Document found = workersCollection.find(new Document("username", username)).first();
@@ -23,6 +23,6 @@ public class NewOrdersGiver {
             MakeOrdersList(newOrders, clientsCollection, ordersCollection, newOrder);
         }
         mongoClient.close();
-        return newOrders;
+        return newOrders.toArray(new String[0]);
     }
 }

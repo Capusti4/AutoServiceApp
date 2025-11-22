@@ -29,9 +29,10 @@ public class CreateOrderHandler implements HttpHandler {
         if (data == null) {
             return;
         }
-        int orderTypeId = Integer.parseInt((String) data.get("orderTypeId"));
+        int orderTypeId = Math.toIntExact(Math.round((double) data.get("orderTypeId")));
         String comment = (String) data.get("comment");
         ObjectId userId = GetUserId((Map<String, Object>) data.get("userSessionInfo"), exchange.getRequestURI().toString());
+        if (UserIdIsNotCorrect(userId, exchange)) { return; }
         Order order;
         if (orderTypeId == 0) {
             order = new Order((String) data.get("orderType"), userId, comment);

@@ -9,19 +9,18 @@ import java.util.Arrays;
 import java.util.Map;
 
 import static org.Handlers.HandlerFunctions.*;
-import static org.Services.NewOrdersGiver.GetNewOrdersList;
+import static org.Services.CompletedOrdersGiver.GetCompletedOrders;
 import static org.Services.UserIdGiver.GetUserId;
 
-public class GetNewOrdersHandler implements HttpHandler {
+public class GetCompletedOrdersHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         try {
             Map<String, Object> data = GetDataFromPost(exchange);
             if (data == null) { return; }
-            String username = (String) data.get("username");
             ObjectId userId = GetUserId(data, exchange.getRequestURI().toString());
             if (UserIdIsNotCorrect(userId, exchange)) { return; }
-            String[] orders = GetNewOrdersList(username);
+            String[] orders = GetCompletedOrders(userId);
             SendJsonResponse(exchange, "{\"orders\": " + Arrays.toString(orders) + "}", 200);
         } catch (Exception e) {
             UnknownException(exchange, e);

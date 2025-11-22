@@ -2,7 +2,6 @@ package org.Handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.io.IOException;
@@ -10,7 +9,7 @@ import java.util.Map;
 
 import static org.Handlers.HandlerFunctions.*;
 import static org.Services.OrderCompleter.CompleteOrder;
-import static org.Services.TokenChecker.GetUserData;
+import static org.Services.UserIdGiver.GetUserId;
 
 public class CompleteOrderHandler implements HttpHandler {
     @Override
@@ -18,16 +17,10 @@ public class CompleteOrderHandler implements HttpHandler {
         try {
             Map<String, Object> data = GetDataFromPost(exchange);
             if (data == null) { return; }
-            String username = (String) data.get("username");
-            String sessionToken = (String) data.get("sessionToken");
-            Document workerInfo = GetUserData(username, sessionToken, "/worker/");
-            if (workerInfo == null) {
-                SendStringResponse(exchange, "Токен сессии истек", 409);
-                return;
-            }
+            ObjectId workerId = GetUserId(data, exchange.getRequestURI().toString());
+            if (UserIdIsNotCorrect(workerId, exchange)) { return; }
             ObjectId orderId = new ObjectId((String) data.get("orderId"));
-            CompleteOrder(orderId);
-
+            CompleteOrder(orderId, workerId);
             SendStringResponse(exchange, "Заказ успешно завершен", 200);
         } catch (Exception e){
             UnknownException(exchange, e);

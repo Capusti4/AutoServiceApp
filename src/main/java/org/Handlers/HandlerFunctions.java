@@ -2,6 +2,7 @@ package org.Handlers;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
+import org.bson.types.ObjectId;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,5 +46,13 @@ public class HandlerFunctions {
     public static void UnknownException(HttpExchange exchange, Exception e) throws IOException {
         String errorResp = "Произошла неизвестная ошибка: " + e.getMessage() + "\nСообщите об этой ошибке в поддержку";
         SendStringResponse(exchange, errorResp, 502);
+    }
+
+    public static boolean UserIdIsNotCorrect(ObjectId userId, HttpExchange exchange) throws IOException {
+        if (userId == null){
+            SendStringResponse(exchange, "Токен сессии истек", 409);
+            return true;
+        }
+        return false;
     }
 }
