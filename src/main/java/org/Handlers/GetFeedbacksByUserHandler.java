@@ -9,10 +9,11 @@ import java.util.Arrays;
 import java.util.Map;
 
 import static org.Handlers.HandlerFunctions.*;
-import static org.Services.FeedbacksGiver.GetFeedbacks;
+import static org.Handlers.HandlerFunctions.UnknownException;
+import static org.Services.FeedbacksGiver.GetFeedbacksByUser;
 import static org.Services.UserIdGiver.GetUserId;
 
-public class GetFeedbacksHandler implements HttpHandler {
+public class GetFeedbacksByUserHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         try {
@@ -20,7 +21,7 @@ public class GetFeedbacksHandler implements HttpHandler {
             if (data == null) { return; }
             ObjectId userId = GetUserId(data, exchange.getRequestURI().toString());
             if (UserIdIsNotCorrect(userId, exchange)) { return; }
-            String[] feedbacks = GetFeedbacks(userId);
+            String[] feedbacks = GetFeedbacksByUser(userId);
             SendJsonResponse(exchange, "{\"feedbacks\": " + Arrays.toString(feedbacks) + "}", 200);
         } catch (Exception e) {
             UnknownException(exchange, e);

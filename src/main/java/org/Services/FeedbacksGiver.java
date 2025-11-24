@@ -9,12 +9,25 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 
 public class FeedbacksGiver {
-    public static String[] GetFeedbacks(ObjectId userId) {
+    public static String[] GetFeedbacksForUser(ObjectId userId) {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> feedbacksCollection = mongoClient.getDatabase("Users").getCollection("Feedbacks");
         ArrayList<String> feedbacks = new ArrayList<>();
         for (Document feedback : feedbacksCollection.find()) {
             if (feedback.get("targetId").equals(userId)) {
+                feedbacks.add(feedback.toJson());
+            }
+        }
+        mongoClient.close();
+        return feedbacks.toArray(new String[0]);
+    }
+
+    public static String[] GetFeedbacksByUser(ObjectId userId) {
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoCollection<Document> feedbacksCollection = mongoClient.getDatabase("Users").getCollection("Feedbacks");
+        ArrayList<String> feedbacks = new ArrayList<>();
+        for (Document feedback : feedbacksCollection.find()) {
+            if (feedback.get("authorId").equals(userId)) {
                 feedbacks.add(feedback.toJson());
             }
         }

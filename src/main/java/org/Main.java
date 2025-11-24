@@ -26,8 +26,10 @@ public class Main {
         server.createContext("/client/getNotifications", new GetNotificationsHandler());
         server.createContext("/client/getNotificationsAmount", new GetNotificationsAmountHandler());
         server.createContext("/client/readNotification", new ReadNotificationHandler());
+        server.createContext("/client/readAllNotifications", new ReadAllNotificationsHandler());
         server.createContext("/client/sendFeedback", new SendFeedbackHandler());
-        server.createContext("/client/getFeedbacks", new GetFeedbacksHandler());
+        server.createContext("/client/getFeedbacksForUser", new GetFeedbacksForUserHandler());
+        server.createContext("/client/getFeedbacksByUser", new GetFeedbacksByUserHandler());
     }
 
     public static void CreateWorkerContext(HttpServer server) {
@@ -43,7 +45,9 @@ public class Main {
         server.createContext("/worker/getNotifications", new GetNotificationsHandler());
         server.createContext("/worker/getNotificationsAmount", new GetNotificationsAmountHandler());
         server.createContext("/worker/readNotification", new ReadNotificationHandler());
+        server.createContext("/worker/readAllNotifications", new ReadAllNotificationsHandler());
         server.createContext("/worker/sendFeedback", new SendFeedbackHandler());
-        server.createContext("/worker/getFeedbacks", new GetFeedbacksHandler());
+        server.createContext("/worker/getFeedbacksForUser", new GetFeedbacksForUserHandler());
+        server.createContext("/worker/getFeedbacksByUser", new GetFeedbacksByUserHandler());
     }
 }

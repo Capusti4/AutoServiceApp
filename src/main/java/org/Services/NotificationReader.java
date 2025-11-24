@@ -19,4 +19,13 @@ public class NotificationReader {
         }
         mongoClient.close();
     }
+
+    public static void ReadAllNotifications(ObjectId userId) {
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoCollection<Document> notificationsCollection = mongoClient.getDatabase("Users").getCollection("Notifications");
+        for (Document notification : notificationsCollection.find(new Document("userId", userId).append("isRead", false))) {
+            notificationsCollection.updateOne(notification, new Document("$set", new Document("isRead", true)));
+        }
+        mongoClient.close();
+    }
 }
