@@ -21,7 +21,7 @@ public class GetCompletedOrdersHandler implements HttpHandler {
             ObjectId userId = GetUserId(data, exchange.getRequestURI().toString());
             if (UserIdIsNotCorrect(userId, exchange)) { return; }
             String[] orders = GetCompletedOrders(userId);
-            SendJsonResponse(exchange, "{\"orders\": " + Arrays.toString(orders) + "}", 200);
+            SendJsonResponse(exchange, Arrays.toString(orders), 200);
         } catch (Exception e) {
             UnknownException(exchange, e);
         } finally {

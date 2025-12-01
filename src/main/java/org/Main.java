@@ -27,6 +27,7 @@ public class Main {
         server.createContext("/client/getNotificationsAmount", new GetNotificationsAmountHandler());
         server.createContext("/client/readNotification", new ReadNotificationHandler());
         server.createContext("/client/readAllNotifications", new ReadAllNotificationsHandler());
+        server.createContext("/client/deleteNotification", new DeleteNotificationHandler());
         server.createContext("/client/sendFeedback", new SendFeedbackHandler());
         server.createContext("/client/getFeedbacksForUser", new GetFeedbacksForUserHandler());
         server.createContext("/client/getFeedbacksByUser", new GetFeedbacksByUserHandler());
@@ -46,6 +47,7 @@ public class Main {
         server.createContext("/worker/getNotificationsAmount", new GetNotificationsAmountHandler());
         server.createContext("/worker/readNotification", new ReadNotificationHandler());
         server.createContext("/worker/readAllNotifications", new ReadAllNotificationsHandler());
+        server.createContext("/worker/deleteNotification", new DeleteNotificationHandler());
         server.createContext("/worker/sendFeedback", new SendFeedbackHandler());
         server.createContext("/worker/getFeedbacksForUser", new GetFeedbacksForUserHandler());
         server.createContext("/worker/getFeedbacksByUser", new GetFeedbacksByUserHandler());
