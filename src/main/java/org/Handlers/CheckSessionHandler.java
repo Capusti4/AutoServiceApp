@@ -2,10 +2,10 @@ package org.Handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.bson.Document;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.Handlers.HandlerFunctions.*;
 import static org.Services.TokenChecker.GetUserData;
@@ -16,13 +16,10 @@ public class CheckSessionHandler implements HttpHandler {
         try {
             Map<String, Object> data = GetDataFromPost(exchange);
             if (data == null) { return; }
-
             String username = data.get("username").toString();
             String sessionToken = data.get("sessionToken").toString();
-
-            String userInfo = Objects.requireNonNull(GetUserData(username, sessionToken, String.valueOf(exchange.getRequestURI()))).toJson();
-
-            SendResponse(exchange, userInfo);
+            Document user = GetUserData(username, sessionToken, String.valueOf(exchange.getRequestURI()));
+            SendResponse(exchange, user);
         } catch (Exception e) {
             UnknownException(exchange, e);
         } finally {
@@ -30,9 +27,9 @@ public class CheckSessionHandler implements HttpHandler {
         }
     }
 
-    static void SendResponse(HttpExchange exchange, String userInfo) throws Exception {
-        if (userInfo != null) {
-            SendJsonResponse(exchange, userInfo, 200);
+    static void SendResponse(HttpExchange exchange, Document user) throws Exception {
+        if (user != null) {
+            SendJsonResponse(exchange, user.toJson(), 200);
         } else {
             SendStringResponse(exchange, "Срок действия сессии истек", 409);
         }
