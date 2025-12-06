@@ -2,6 +2,8 @@ package org.Handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.Exceptions.IncorrectSessionToken;
+import org.Exceptions.NotAllowedHttpMethod;
 import org.bson.types.ObjectId;
 
 import java.io.IOException;
@@ -17,13 +19,13 @@ public class GetFeedbacksForUserHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         try {
             Map<String, Object> data = GetDataFromPost(exchange);
-            if (data == null) { return; }
             ObjectId userId = GetUserId(data, exchange.getRequestURI().toString());
-            if (UserIdIsNotCorrect(userId, exchange)) { return; }
             String[] feedbacks = GetFeedbacksForUser(userId);
-            SendJsonResponse(exchange, "{\"feedbacks\": " + Arrays.toString(feedbacks) + "}", 200);
+            SendJsonResponse(exchange, Arrays.toString(feedbacks), 200);
+        } catch (NotAllowedHttpMethod | IncorrectSessionToken e) {
+            SendStringResponse(exchange, e.getMessage(), 409);
         } catch (Exception e) {
-            UnknownException(exchange, e);
+            SendUnknownExceptionResponse(exchange, e);
         } finally {
             exchange.close();
         }

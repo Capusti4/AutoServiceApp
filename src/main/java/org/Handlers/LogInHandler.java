@@ -3,6 +3,7 @@ package org.Handlers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.Exceptions.IncorrectUsernameOrPassword;
+import org.Exceptions.NotAllowedHttpMethod;
 
 import java.io.IOException;
 import java.util.Map;
@@ -15,11 +16,11 @@ public class LogInHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         try {
             String response = CreateResponse(exchange);
-            if (response != null) { SendJsonResponse(exchange, response, 200); }
-        } catch (IncorrectUsernameOrPassword e) {
+            SendJsonResponse(exchange, response, 200);
+        } catch (NotAllowedHttpMethod | IncorrectUsernameOrPassword e) {
             SendStringResponse(exchange, e.getMessage(), 409);
         } catch (Exception e) {
-            UnknownException(exchange, e);
+            SendUnknownExceptionResponse(exchange, e);
         } finally {
             exchange.close();
         }
@@ -27,7 +28,6 @@ public class LogInHandler implements HttpHandler {
 
     static String CreateResponse(HttpExchange exchange) throws Exception {
         Map<String, Object> data = GetDataFromPost(exchange);
-        if (data == null) { return null; }
         String username = data.get("username").toString();
         String password = data.get("password").toString();
         String[] userInfoAndToken = logIn(username, password, String.valueOf(exchange.getRequestURI()));

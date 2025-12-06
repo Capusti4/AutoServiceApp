@@ -15,7 +15,9 @@ public class LogIn {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> usersCollection = GetCollection(mongoClient, requestURI);
         Document found = usersCollection.find(new Document("username", username).append("password", password)).first();
-        if (found == null) { throw new IncorrectUsernameOrPassword(); }
+        if (found == null) {
+            throw new IncorrectUsernameOrPassword();
+        }
         String token = GenerateSessionToken();
         usersCollection.updateOne(
                 new Document("username", username).append("password", password),
@@ -26,6 +28,6 @@ public class LogIn {
         found.remove("password");
         found.remove("_id");
         found.remove("sessionTokens");
-        return new String[] {found.toJson(), token};
+        return new String[]{found.toJson(), token};
     }
 }

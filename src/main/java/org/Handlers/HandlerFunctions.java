@@ -2,7 +2,7 @@ package org.Handlers;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
-import org.bson.types.ObjectId;
+import org.Exceptions.NotAllowedHttpMethod;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,10 +11,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class HandlerFunctions {
-    public static Map<String, Object> GetDataFromPost(HttpExchange exchange) throws IOException {
+    public static Map<String, Object> GetDataFromPost(HttpExchange exchange) throws IOException, NotAllowedHttpMethod {
         if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
-            SendStringResponse(exchange, "Ошибка, метод не разрешен", 409);
-            return null;
+            throw new NotAllowedHttpMethod();
         }
 
         String body;
@@ -43,16 +42,8 @@ public class HandlerFunctions {
         }
     }
 
-    public static void UnknownException(HttpExchange exchange, Exception e) throws IOException {
+    public static void SendUnknownExceptionResponse(HttpExchange exchange, Exception e) throws IOException {
         String errorResp = "Произошла неизвестная ошибка: " + e.getMessage() + "\nСообщите об этой ошибке в поддержку";
         SendStringResponse(exchange, errorResp, 502);
-    }
-
-    public static boolean UserIdIsNotCorrect(ObjectId userId, HttpExchange exchange) throws IOException {
-        if (userId == null){
-            SendStringResponse(exchange, "Токен сессии истек", 409);
-            return true;
-        }
-        return false;
     }
 }

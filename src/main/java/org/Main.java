@@ -17,7 +17,7 @@ public class Main {
     }
 
     public static void CreateClientContext(HttpServer server) {
-        server.createContext("/client/register", new RegisterHandler());
+        server.createContext("/client/Register", new RegisterHandler());
         server.createContext("/client/logIn", new LogInHandler());
         server.createContext("/client/checkSession", new CheckSessionHandler());
         server.createContext("/client/deleteSession", new DeleteSessionHandler());
@@ -34,7 +34,7 @@ public class Main {
     }
 
     public static void CreateWorkerContext(HttpServer server) {
-        server.createContext("/worker/register", new RegisterHandler());
+        server.createContext("/worker/Register", new RegisterHandler());
         server.createContext("/worker/logIn", new LogInHandler());
         server.createContext("/worker/checkSession", new CheckSessionHandler());
         server.createContext("/worker/deleteSession", new DeleteSessionHandler());

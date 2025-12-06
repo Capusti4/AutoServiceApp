@@ -1,5 +1,6 @@
 package org.Services;
 
+import org.Exceptions.IncorrectSessionToken;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -12,8 +13,10 @@ public class UserIdGiver {
         String sessionToken = (String) data.get("sessionToken");
         Document found = ServiceFunctions.GetUserDocument(username, requestURI);
         for (Object token : found.get("sessionTokens", ArrayList.class)) {
-            if (token.equals(sessionToken)) { return (ObjectId) found.get("_id"); }
+            if (token.equals(sessionToken)) {
+                return (ObjectId) found.get("_id");
+            }
         }
-        return null;
+        throw new IncorrectSessionToken();
     }
 }

@@ -2,6 +2,8 @@ package org.Handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.Exceptions.IncorrectSessionToken;
+import org.Exceptions.NotAllowedHttpMethod;
 import org.bson.types.ObjectId;
 
 import java.io.IOException;
@@ -9,21 +11,21 @@ import java.util.Map;
 
 import static org.Handlers.HandlerFunctions.*;
 import static org.Services.NotificationDeleter.DeleteNotification;
-import static org.Services.UserIdGiver.GetUserId;
+import static org.Services.TokenChecker.CheckUserToken;
 
 public class DeleteNotificationHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         try {
             Map<String, Object> data = GetDataFromPost(exchange);
-            if (data == null) { return; }
-            ObjectId userId = GetUserId(data, exchange.getRequestURI().toString());
-            if (UserIdIsNotCorrect(userId, exchange)) { return; }
+            CheckUserToken(data, exchange.getRequestURI().toString());
             ObjectId notificationId = new ObjectId((String) data.get("notificationId"));
             DeleteNotification(notificationId);
             SendStringResponse(exchange, "Уведомление успешно удалено", 200);
+        } catch (NotAllowedHttpMethod | IncorrectSessionToken e) {
+            SendStringResponse(exchange, e.getMessage(), 409);
         } catch (Exception e) {
-            UnknownException(exchange, e);
+            SendUnknownExceptionResponse(exchange, e);
         } finally {
             exchange.close();
         }

@@ -15,12 +15,12 @@ import static org.Services.ServiceFunctions.GenerateSessionToken;
 import static org.Services.ServiceFunctions.GetCollection;
 
 public class Registration {
-    public static String[] register(User user, String requestURI) throws Exception {
+    public static String[] Register(User user, String requestURI) throws Exception {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> usersCollection = GetCollection(mongoClient, requestURI);
 
-        String username = user.getUsername();
-        String phoneNum = user.getPhoneNum();
+        String username = user.username();
+        String phoneNum = user.phoneNum();
         CheckUsername(usersCollection, username);
         CheckPhoneNumber(usersCollection, phoneNum);
 
@@ -40,10 +40,7 @@ public class Registration {
         if (found != null) {
             throw new UsernameAlreadyExists();
         }
-        if (!username.matches("[A-Za-z0-9]*")) {
-            throw new IncorrectUsername();
-        }
-        if (Character.isDigit(username.charAt(0))) {
+        if (!username.matches("[A-Za-z0-9]*") || Character.isDigit(username.charAt(0))) {
             throw new IncorrectUsername();
         }
     }
@@ -57,11 +54,11 @@ public class Registration {
 
     static Document CreateClientDoc(User user, String token) {
         return new Document()
-                .append("username", user.getUsername())
-                .append("firstName", user.getFirstName())
-                .append("lastName", user.getLastName())
-                .append("phoneNum", user.getPhoneNum())
-                .append("password", user.getPassword())
+                .append("username", user.username())
+                .append("firstName", user.firstName())
+                .append("lastName", user.lastName())
+                .append("phoneNum", user.phoneNum())
+                .append("password", user.password())
                 .append("sessionTokens", Collections.singletonList(token));
     }
 }

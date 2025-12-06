@@ -15,7 +15,9 @@ public class FeedbackCreator {
         MongoCollection<Document> feedbacksCollection = mongoClient.getDatabase("Users").getCollection("Feedbacks");
         MongoCollection<Document> completedOrdersCollection = mongoClient.getDatabase("Orders").getCollection("CompletedOrders");
         Document orderDoc = completedOrdersCollection.find(new Document("_id", orderId)).first();
-        if (orderDoc == null) { throw new UnknownOrderId(); }
+        if (orderDoc == null) {
+            throw new UnknownOrderId();
+        }
         Document feedbackDocument = new Document()
                 .append("authorId", authorId)
                 .append("targetId", targetId)
@@ -37,11 +39,13 @@ public class FeedbackCreator {
         if (rating == 1) {
             rightWordForm = " звезда";
         } else if (rating == 5) {
-            rightWordForm =  " звезд";
+            rightWordForm = " звезд";
         } else {
             rightWordForm = " звезды";
         }
-        if (comment == null) { return "Вам оставили отзыв:\n" + rating + rightWordForm; }
+        if (comment == null) {
+            return "Вам оставили отзыв:\n" + rating + rightWordForm;
+        }
         return "Вам оставили отзыв:\n" + rating + rightWordForm + "\n\"" + comment + "\"";
     }
 }

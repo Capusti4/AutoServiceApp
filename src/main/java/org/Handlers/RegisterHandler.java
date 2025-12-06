@@ -15,24 +15,22 @@ public class RegisterHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         try {
             User user = CreateUser(exchange);
-            if (user == null) { return; }
             String response = CreateResponse(user, exchange);
             SendJsonResponse(exchange, response, 201);
         } catch (IncorrectName | IncorrectPhoneNumber | UsernameAlreadyExists | IncorrectUsername |
-                 PhoneNumberAlreadyExists e) {
+                 PhoneNumberAlreadyExists | NotAllowedHttpMethod e) {
             String errorResp = e.getMessage();
             int errorCode = 500;
             SendStringResponse(exchange, errorResp, errorCode);
         } catch (Exception e) {
-            UnknownException(exchange, e);
+            SendUnknownExceptionResponse(exchange, e);
         } finally {
             exchange.close();
         }
     }
 
-    static User CreateUser(HttpExchange exchange) throws IOException {
+    static User CreateUser(HttpExchange exchange) throws Exception {
         Map<String, Object> data = GetDataFromPost(exchange);
-        if (data == null) { return null; }
         String username = (String) data.get("username");
         String password = (String) data.get("password");
         String firstName = (String) data.get("firstName");
@@ -42,7 +40,7 @@ public class RegisterHandler implements HttpHandler {
     }
 
     static String CreateResponse(User user, HttpExchange exchange) throws Exception {
-        String[] userInfoAndToken = Registration.register(user, String.valueOf(exchange.getRequestURI()));
+        String[] userInfoAndToken = Registration.Register(user, String.valueOf(exchange.getRequestURI()));
         String userInfo = userInfoAndToken[0];
         String token = userInfoAndToken[1];
         return String.format("""
@@ -51,6 +49,6 @@ public class RegisterHandler implements HttpHandler {
                     "userData": %s,
                     "sessionInfo": { "username": "%s", "sessionToken": "%s" }
                 }
-                """, userInfo, user.getUsername(), token);
+                """, userInfo, user.username(), token);
     }
 }

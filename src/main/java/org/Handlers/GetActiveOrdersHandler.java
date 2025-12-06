@@ -2,28 +2,29 @@ package org.Handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.bson.types.ObjectId;
+import org.Exceptions.IncorrectSessionToken;
+import org.Exceptions.NotAllowedHttpMethod;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 import static org.Handlers.HandlerFunctions.*;
 import static org.Services.ActiveOrdersGiver.GetActiveOrders;
-import static org.Services.UserIdGiver.GetUserId;
+import static org.Services.TokenChecker.CheckUserToken;
 
 public class GetActiveOrdersHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         try {
             Map<String, Object> data = GetDataFromPost(exchange);
-            if (data == null) { return; }
-            ObjectId workerId = GetUserId(data, exchange.getRequestURI().toString());
-            if (UserIdIsNotCorrect(workerId, exchange)) { return; }
-            ArrayList<String> activeOrders = GetActiveOrders(workerId);
-            SendJsonResponse(exchange, activeOrders.toString(), 200);
-        } catch (Exception e){
-            UnknownException(exchange, e);
+            CheckUserToken(data, exchange.getRequestURI().toString());
+            String[] activeOrders = GetActiveOrders();
+            SendJsonResponse(exchange, Arrays.toString(activeOrders), 200);
+        } catch (NotAllowedHttpMethod | IncorrectSessionToken e) {
+            SendStringResponse(exchange, e.getMessage(), 409);
+        } catch (Exception e) {
+            SendUnknownExceptionResponse(exchange, e);
         } finally {
             exchange.close();
         }

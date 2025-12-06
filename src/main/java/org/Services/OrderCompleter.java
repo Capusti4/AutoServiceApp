@@ -15,7 +15,9 @@ public class OrderCompleter {
         MongoCollection<Document> activeOrdersCollection = mongoClient.getDatabase("Orders").getCollection("ActiveOrders");
         MongoCollection<Document> completedOrdersCollection = mongoClient.getDatabase("Orders").getCollection("CompletedOrders");
         Document found = activeOrdersCollection.find(new Document("_id", orderId).append("workerId", workerId)).first();
-        if (found == null) { throw new IncorrectOrderId(); }
+        if (found == null) {
+            throw new IncorrectOrderId();
+        }
         activeOrdersCollection.deleteOne(found);
         completedOrdersCollection.insertOne(found
                 .append("hasCustomerFeedback", false)

@@ -12,7 +12,9 @@ public class NotificationDeleter {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> notificationsCollection = mongoClient.getDatabase("Users").getCollection("Notifications");
         Document find = notificationsCollection.find(new Document("_id", notificationId)).first();
-        if (find == null) { throw new IncorrectNotificationId(); }
+        if (find == null) {
+            throw new IncorrectNotificationId();
+        }
         notificationsCollection.deleteOne(find);
         mongoClient.close();
     }

@@ -14,7 +14,7 @@ public class ServiceFunctions {
     private static final SecureRandom secureRandom = new SecureRandom(); // thread-safe
     private static final Base64.Encoder base64UrlEncoder = Base64.getUrlEncoder().withoutPadding();
 
-    public static String GenerateSessionToken(){
+    public static String GenerateSessionToken() {
         byte[] bytes = new byte[32];
         secureRandom.nextBytes(bytes);
         return base64UrlEncoder.encodeToString(bytes);
@@ -31,19 +31,21 @@ public class ServiceFunctions {
         }
     }
 
-    static void MakeOrdersList(ArrayList<String> orders,
-                               MongoCollection<Document> clientsCollection,
-                               MongoCollection<Document> ordersCollection,
-                               Document order) {
-        Document customer = clientsCollection.find(new Document("_id", order.get("customerId"))).first();
-        if (customer == null) {
-            ordersCollection.deleteOne(order);
-        } else {
-            order.append("customerFirstName", customer.get("firstName"));
-            order.append("customerLastName", customer.get("lastName"));
-            order.append("customerPhoneNum", customer.get("phoneNum"));
-            orders.add(order.toJson());
+    static String[] GetOrdersList(MongoCollection<Document> clientsCollection,
+                                  MongoCollection<Document> ordersCollection) {
+        ArrayList<String> orders = new ArrayList<>();
+        for (Document order : ordersCollection.find()) {
+            Document customer = clientsCollection.find(new Document("_id", order.get("customerId"))).first();
+            if (customer == null) {
+                ordersCollection.deleteOne(order);
+            } else {
+                order.append("customerFirstName", customer.get("firstName"));
+                order.append("customerLastName", customer.get("lastName"));
+                order.append("customerPhoneNum", customer.get("phoneNum"));
+                orders.add(order.toJson());
+            }
         }
+        return orders.toArray(new String[0]);
     }
 
     static Document GetUserDocument(String username, String requestURI) throws Exception {

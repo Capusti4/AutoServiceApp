@@ -14,7 +14,9 @@ public class OrderStarter {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> newOrdersCollection = mongoClient.getDatabase("Orders").getCollection("NewOrders");
         Document orderInfo = newOrdersCollection.find(new Document("_id", orderId)).first();
-        if (orderInfo == null) { throw new IncorrectOrderId(); }
+        if (orderInfo == null) {
+            throw new IncorrectOrderId();
+        }
 
         newOrdersCollection.deleteOne(orderInfo);
         orderInfo.append("workerId", workerId);
