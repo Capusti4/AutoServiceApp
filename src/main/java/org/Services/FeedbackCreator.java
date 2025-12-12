@@ -7,10 +7,10 @@ import org.Exceptions.UnknownOrderId;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import static org.Services.NotificationsCreator.CreateNotification;
+import static org.Services.NotificationsCreator.createNotification;
 
 public class FeedbackCreator {
-    public static void CreateFeedback(ObjectId authorId, ObjectId targetId, ObjectId orderId, int rating, String comment) throws UnknownOrderId {
+    public static void createFeedback(ObjectId authorId, ObjectId targetId, ObjectId orderId, int rating, String comment) throws UnknownOrderId {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> feedbacksCollection = mongoClient.getDatabase("Users").getCollection("Feedbacks");
         MongoCollection<Document> completedOrdersCollection = mongoClient.getDatabase("Orders").getCollection("CompletedOrders");
@@ -29,12 +29,12 @@ public class FeedbackCreator {
             completedOrdersCollection.updateOne(orderDoc, new Document("$set", new Document("hasWorkerFeedback", true)));
         }
         feedbacksCollection.insertOne(feedbackDocument);
-        String text = CreateText(rating, comment);
-        CreateNotification(targetId, 4, text);
+        String text = createText(rating, comment);
+        createNotification(targetId, 4, text);
         mongoClient.close();
     }
 
-    static String CreateText(int rating, String comment) {
+    static String createText(int rating, String comment) {
         String rightWordForm;
         if (rating == 1) {
             rightWordForm = " звезда";

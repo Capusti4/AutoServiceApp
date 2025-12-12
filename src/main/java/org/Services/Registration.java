@@ -11,20 +11,20 @@ import org.bson.Document;
 
 import java.util.Collections;
 
-import static org.Services.ServiceFunctions.GenerateSessionToken;
-import static org.Services.ServiceFunctions.GetCollection;
+import static org.Services.ServiceFunctions.generateSessionToken;
+import static org.Services.ServiceFunctions.getCollection;
 
 public class Registration {
-    public static String[] Register(User user, String requestURI) throws Exception {
+    public static String[] register(User user, String requestURI) throws Exception {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-        MongoCollection<Document> usersCollection = GetCollection(mongoClient, requestURI);
+        MongoCollection<Document> usersCollection = getCollection(mongoClient, requestURI);
 
         String username = user.username();
         String phoneNum = user.phoneNum();
-        CheckUsername(usersCollection, username);
+        checkUsername(usersCollection, username);
         CheckPhoneNumber(usersCollection, phoneNum);
 
-        String token = GenerateSessionToken();
+        String token = generateSessionToken();
 
         Document clientDoc = CreateClientDoc(user, token);
         usersCollection.insertOne(clientDoc);
@@ -35,7 +35,7 @@ public class Registration {
         return new String[]{clientDoc.toJson(), token};
     }
 
-    static void CheckUsername(MongoCollection<Document> usersCollection, String username) {
+    static void checkUsername(MongoCollection<Document> usersCollection, String username) {
         Document found = usersCollection.find(new Document("username", username)).first();
         if (found != null) {
             throw new UsernameAlreadyExists();

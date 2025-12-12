@@ -8,7 +8,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 public class NotificationReader {
-    public static void ReadNotification(ObjectId notificationId) {
+    public static void readNotification(ObjectId notificationId) {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> notificationsCollection = mongoClient.getDatabase("Users").getCollection("Notifications");
         Document found = notificationsCollection.find(new Document("_id", notificationId)).first();
@@ -20,7 +20,7 @@ public class NotificationReader {
         mongoClient.close();
     }
 
-    public static void ReadAllNotifications(ObjectId userId) {
+    public static void readAllNotifications(ObjectId userId) {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> notificationsCollection = mongoClient.getDatabase("Users").getCollection("Notifications");
         for (Document notification : notificationsCollection.find(new Document("userId", userId).append("isRead", false))) {

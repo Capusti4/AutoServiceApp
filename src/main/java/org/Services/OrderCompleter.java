@@ -7,10 +7,10 @@ import org.Exceptions.IncorrectOrderId;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import static org.Services.NotificationsCreator.CreateNotification;
+import static org.Services.NotificationsCreator.createNotification;
 
 public class OrderCompleter {
-    public static void CompleteOrder(ObjectId orderId, ObjectId workerId) throws Exception {
+    public static void completeOrder(ObjectId orderId, ObjectId workerId) throws Exception {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> activeOrdersCollection = mongoClient.getDatabase("Orders").getCollection("ActiveOrders");
         MongoCollection<Document> completedOrdersCollection = mongoClient.getDatabase("Orders").getCollection("CompletedOrders");
@@ -23,19 +23,19 @@ public class OrderCompleter {
                 .append("hasCustomerFeedback", false)
                 .append("hasWorkerFeedback", false));
         mongoClient.close();
-        SendNotifications(found);
+        sendNotifications(found);
     }
 
-    static void SendNotifications(Document found) {
+    static void sendNotifications(Document found) {
         var workerId = (ObjectId) found.get("workerId");
         var customerId = (ObjectId) found.get("customerId");
-        CreateNotification(
+        createNotification(
                 customerId,
                 3,
                 "Ваш заказ \"" + found.get("type") + "\" с комментарием \"" +
                         found.get("comment") + "\" успешно завершен!"
         );
-        CreateNotification(
+        createNotification(
                 workerId, 5, "Вы завершили заказ " + found.get("_id").toString()
         );
     }

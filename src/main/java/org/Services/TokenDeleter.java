@@ -8,12 +8,12 @@ import com.mongodb.client.model.Updates;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import static org.Services.ServiceFunctions.GetCollection;
+import static org.Services.ServiceFunctions.getCollection;
 
-public class DeleteToken {
-    public static void DeleteSessionToken(String username, String token, String requestURI) throws Exception {
+public class TokenDeleter {
+    public static void deleteSessionToken(String username, String token, String requestURI) throws Exception {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-        MongoCollection<Document> usersCollection = GetCollection(mongoClient, requestURI);
+        MongoCollection<Document> usersCollection = getCollection(mongoClient, requestURI);
 
         Bson filter = Filters.eq("username", username);
         Bson update = Updates.pull("sessionTokens", token);

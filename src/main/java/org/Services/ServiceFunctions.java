@@ -14,13 +14,13 @@ public class ServiceFunctions {
     private static final SecureRandom secureRandom = new SecureRandom(); // thread-safe
     private static final Base64.Encoder base64UrlEncoder = Base64.getUrlEncoder().withoutPadding();
 
-    public static String GenerateSessionToken() {
+    public static String generateSessionToken() {
         byte[] bytes = new byte[32];
         secureRandom.nextBytes(bytes);
         return base64UrlEncoder.encodeToString(bytes);
     }
 
-    public static MongoCollection<Document> GetCollection(MongoClient mongoClient, String requestURI) throws Exception {
+    public static MongoCollection<Document> getCollection(MongoClient mongoClient, String requestURI) throws Exception {
         MongoDatabase usersDatabase = mongoClient.getDatabase("Users");
         if (requestURI.startsWith("/client/")) {
             return usersDatabase.getCollection("Clients");
@@ -31,7 +31,7 @@ public class ServiceFunctions {
         }
     }
 
-    static String[] GetOrdersList(MongoCollection<Document> clientsCollection,
+    static String[] getOrdersList(MongoCollection<Document> clientsCollection,
                                   MongoCollection<Document> ordersCollection) {
         ArrayList<String> orders = new ArrayList<>();
         for (Document order : ordersCollection.find()) {
@@ -48,9 +48,9 @@ public class ServiceFunctions {
         return orders.toArray(new String[0]);
     }
 
-    static Document GetUserDocument(String username, String requestURI) throws Exception {
+    static Document getUserDocument(String username, String requestURI) throws Exception {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-        MongoCollection<Document> usersCollection = GetCollection(mongoClient, requestURI);
+        MongoCollection<Document> usersCollection = getCollection(mongoClient, requestURI);
         Document found = usersCollection.find(new Document("username", username)).first();
         mongoClient.close();
         return found;

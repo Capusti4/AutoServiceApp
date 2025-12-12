@@ -9,7 +9,7 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 
 public class FeedbacksGiver {
-    public static String[] GetFeedbacksForUser(ObjectId userId) {
+    public static String[] getFeedbacksForUser(ObjectId userId) {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> feedbacksCollection = mongoClient.getDatabase("Users").getCollection("Feedbacks");
         ArrayList<String> feedbacks = new ArrayList<>();
@@ -22,7 +22,7 @@ public class FeedbacksGiver {
         return feedbacks.toArray(new String[0]);
     }
 
-    public static String[] GetFeedbacksByUser(ObjectId userId) {
+    public static String[] getFeedbacksByUser(ObjectId userId) {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> feedbacksCollection = mongoClient.getDatabase("Users").getCollection("Feedbacks");
         ArrayList<String> feedbacks = new ArrayList<>();

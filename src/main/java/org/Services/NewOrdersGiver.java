@@ -6,14 +6,15 @@ import com.mongodb.client.MongoCollection;
 import org.Exceptions.IncorrectSessionToken;
 import org.bson.Document;
 
-import static org.Services.ServiceFunctions.GetOrdersList;
+import static org.Services.ServiceFunctions.getOrdersList;
 
 public class NewOrdersGiver {
-    public static String[] GetNewOrdersList() throws IncorrectSessionToken {
+    public static String[] getNewOrdersList() throws IncorrectSessionToken {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-        MongoCollection<Document> ordersCollection = mongoClient.getDatabase("Orders").getCollection("NewOrders");
+        MongoCollection<Document> newOrdersCollection = mongoClient.getDatabase("Orders").getCollection("NewOrders");
         MongoCollection<Document> clientsCollection = mongoClient.getDatabase("Users").getCollection("Clients");
+        String[] orders = getOrdersList(clientsCollection, newOrdersCollection);
         mongoClient.close();
-        return GetOrdersList(clientsCollection, ordersCollection);
+        return orders;
     }
 }

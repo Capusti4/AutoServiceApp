@@ -7,10 +7,10 @@ import org.Exceptions.IncorrectOrderId;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import static org.Services.NotificationsCreator.CreateNotification;
+import static org.Services.NotificationsCreator.createNotification;
 
 public class OrderStarter {
-    public static void StartOrder(ObjectId orderId, ObjectId workerId) throws Exception {
+    public static void startOrder(ObjectId orderId, ObjectId workerId) throws Exception {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> newOrdersCollection = mongoClient.getDatabase("Orders").getCollection("NewOrders");
         Document orderInfo = newOrdersCollection.find(new Document("_id", orderId)).first();
@@ -24,7 +24,7 @@ public class OrderStarter {
         activeOrdersCollection.insertOne(orderInfo);
 
         String text = "Ваш заказ \"" + orderInfo.get("type") + "\" с комментарием \"" + orderInfo.get("comment") + "\" успешно взят в работу!";
-        CreateNotification((ObjectId) orderInfo.get("customerId"), 2, text);
+        createNotification((ObjectId) orderInfo.get("customerId"), 2, text);
         mongoClient.close();
     }
 }

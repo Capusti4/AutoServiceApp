@@ -8,7 +8,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 public class NotificationDeleter {
-    public static void DeleteNotification(ObjectId notificationId) {
+    public static void deleteNotification(ObjectId notificationId) {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> notificationsCollection = mongoClient.getDatabase("Users").getCollection("Notifications");
         Document find = notificationsCollection.find(new Document("_id", notificationId)).first();

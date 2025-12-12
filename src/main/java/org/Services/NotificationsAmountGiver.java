@@ -7,7 +7,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 public class NotificationsAmountGiver {
-    public static int GetNotificationsAmount(ObjectId userId) {
+    public static int getNotificationsAmount(ObjectId userId) {
         int amount = 0;
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> notificationsCollection = mongoClient.getDatabase("Users").getCollection("Notifications");

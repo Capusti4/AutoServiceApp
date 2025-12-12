@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class HandlerFunctions {
-    public static Map<String, Object> GetDataFromPost(HttpExchange exchange) throws IOException, NotAllowedHttpMethod {
+    public static Map<String, Object> getDataFromPost(HttpExchange exchange) throws IOException, NotAllowedHttpMethod {
         if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
             throw new NotAllowedHttpMethod();
         }
@@ -25,25 +25,25 @@ public class HandlerFunctions {
         return gson.fromJson(body, Map.class);
     }
 
-    public static void SendStringResponse(HttpExchange exchange, String response, int code) throws IOException {
+    public static void sendStringResponse(HttpExchange exchange, String response, int code) throws IOException {
         exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=utf-8");
-        SendResponse(exchange, response, code);
+        sendResponse(exchange, response, code);
     }
 
-    public static void SendJsonResponse(HttpExchange exchange, String json, int code) throws IOException {
+    public static void sendJsonResponse(HttpExchange exchange, String json, int code) throws IOException {
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
-        SendResponse(exchange, json, code);
+        sendResponse(exchange, json, code);
     }
 
-    private static void SendResponse(HttpExchange exchange, String response, int code) throws IOException {
+    private static void sendResponse(HttpExchange exchange, String response, int code) throws IOException {
         exchange.sendResponseHeaders(code, response.getBytes().length);
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(response.getBytes());
         }
     }
 
-    public static void SendUnknownExceptionResponse(HttpExchange exchange, Exception e) throws IOException {
-        String errorResp = "Произошла неизвестная ошибка: " + e.getMessage() + "\nСообщите об этой ошибке в поддержку";
-        SendStringResponse(exchange, errorResp, 502);
+    public static void sendUnknownExceptionResponse(HttpExchange exchange, Exception e) throws IOException {
+        String errorResp = "Произошла неизвестная ошибка: " + e.getClass() + "\n" + e.getMessage() + "\nСообщите об этой ошибке в поддержку";
+        sendStringResponse(exchange, errorResp, 502);
     }
 }

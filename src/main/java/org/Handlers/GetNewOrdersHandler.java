@@ -4,27 +4,27 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.Exceptions.IncorrectSessionToken;
 import org.Exceptions.NotAllowedHttpMethod;
+import org.Services.NewOrdersGiver;
+import org.Services.TokenChecker;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
 import static org.Handlers.HandlerFunctions.*;
-import static org.Services.NewOrdersGiver.GetNewOrdersList;
-import static org.Services.TokenChecker.CheckUserToken;
 
 public class GetNewOrdersHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         try {
-            Map<String, Object> data = GetDataFromPost(exchange);
-            CheckUserToken(data, exchange.getRequestURI().toString());
-            String[] orders = GetNewOrdersList();
-            SendJsonResponse(exchange, Arrays.toString(orders), 200);
+            Map<String, Object> data = getDataFromPost(exchange);
+            TokenChecker.checkUserToken(data, exchange.getRequestURI().toString());
+            String[] orders = NewOrdersGiver.getNewOrdersList();
+            sendJsonResponse(exchange, Arrays.toString(orders), 200);
         } catch (NotAllowedHttpMethod | IncorrectSessionToken e) {
-            SendStringResponse(exchange, e.getMessage(), 409);
+            sendStringResponse(exchange, e.getMessage(), 409);
         } catch (Exception e) {
-            SendUnknownExceptionResponse(exchange, e);
+            sendUnknownExceptionResponse(exchange, e);
         } finally {
             exchange.close();
         }

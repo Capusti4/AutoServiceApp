@@ -8,7 +8,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 public class NotificationsCreator {
-    public static void CreateNotification(ObjectId userId, int typeId, String text) {
+    public static void createNotification(ObjectId userId, int typeId, String text) {
         if (typeId < 1 || typeId > 5) {
             throw new IncorrectNotificationType();
         }

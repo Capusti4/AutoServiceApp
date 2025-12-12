@@ -7,7 +7,7 @@ import org.Order;
 import org.bson.Document;
 
 public class OrderCreator {
-    public static void CreateOrder(Order order) {
+    public static void createOrder(Order order) {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> collection = mongoClient.getDatabase("Orders").getCollection("NewOrders");
         Document orderDoc = new Document()
