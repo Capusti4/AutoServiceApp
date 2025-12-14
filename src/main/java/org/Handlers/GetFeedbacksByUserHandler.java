@@ -9,7 +9,6 @@ import org.Services.UserIdGiver;
 import org.bson.types.ObjectId;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Map;
 
 import static org.Handlers.HandlerFunctions.*;
@@ -20,8 +19,8 @@ public class GetFeedbacksByUserHandler implements HttpHandler {
         try {
             Map<String, Object> data = getDataFromPost(exchange);
             ObjectId userId = UserIdGiver.getUserId(data, exchange.getRequestURI().toString());
-            String[] feedbacks = FeedbacksGiver.getFeedbacksByUser(userId);
-            sendJsonResponse(exchange, Arrays.toString(feedbacks), 200);
+            String feedbacksJson = FeedbacksGiver.getFeedbacksByUser(userId);
+            sendJsonResponse(exchange, feedbacksJson, 200);
         } catch (NotAllowedHttpMethod | IncorrectSessionToken e) {
             sendStringResponse(exchange, e.getMessage(), 409);
         } catch (Exception e) {

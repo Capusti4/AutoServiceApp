@@ -9,7 +9,6 @@ import org.Services.UserIdGiver;
 import org.bson.types.ObjectId;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Map;
 
 import static org.Handlers.HandlerFunctions.*;
@@ -20,8 +19,8 @@ public class GetNotificationsHandler implements HttpHandler {
         try {
             Map<String, Object> data = getDataFromPost(exchange);
             ObjectId userId = UserIdGiver.getUserId(data, exchange.getRequestURI().toString());
-            ArrayList<String> notifications = NotificationsGiver.getNotifications(userId);
-            sendJsonResponse(exchange, notifications.toString(), 200);
+            String notificationsJson = NotificationsGiver.getNotifications(userId);
+            sendJsonResponse(exchange, notificationsJson, 200);
         } catch (NotAllowedHttpMethod | IncorrectSessionToken e) {
             sendStringResponse(exchange, e.getMessage(), 409);
         } catch (Exception e) {

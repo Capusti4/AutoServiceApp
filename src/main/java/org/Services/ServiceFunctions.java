@@ -9,6 +9,7 @@ import org.bson.Document;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 public class ServiceFunctions {
     private static final SecureRandom secureRandom = new SecureRandom(); // thread-safe
@@ -31,9 +32,9 @@ public class ServiceFunctions {
         }
     }
 
-    static String[] getOrdersList(MongoCollection<Document> clientsCollection,
+    static List<String> getOrdersList(MongoCollection<Document> clientsCollection,
                                   MongoCollection<Document> ordersCollection) {
-        ArrayList<String> orders = new ArrayList<>();
+        List<String> orders = new ArrayList<>();
         for (Document order : ordersCollection.find()) {
             Document customer = clientsCollection.find(new Document("_id", order.get("customerId"))).first();
             if (customer == null) {
@@ -45,7 +46,7 @@ public class ServiceFunctions {
                 orders.add(order.toJson());
             }
         }
-        return orders.toArray(new String[0]);
+        return orders;
     }
 
     static Document getUserDocument(String username, String requestURI) throws Exception {

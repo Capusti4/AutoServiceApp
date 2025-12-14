@@ -8,7 +8,6 @@ import org.Services.NewOrdersGiver;
 import org.Services.TokenChecker;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Map;
 
 import static org.Handlers.HandlerFunctions.*;
@@ -19,8 +18,8 @@ public class GetNewOrdersHandler implements HttpHandler {
         try {
             Map<String, Object> data = getDataFromPost(exchange);
             TokenChecker.checkUserToken(data, exchange.getRequestURI().toString());
-            String[] orders = NewOrdersGiver.getNewOrdersList();
-            sendJsonResponse(exchange, Arrays.toString(orders), 200);
+            String newOrdersJson = NewOrdersGiver.getNewOrdersList();
+            sendJsonResponse(exchange, newOrdersJson, 200);
         } catch (NotAllowedHttpMethod | IncorrectSessionToken e) {
             sendStringResponse(exchange, e.getMessage(), 409);
         } catch (Exception e) {

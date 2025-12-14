@@ -7,10 +7,11 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class NotificationsGiver {
-    public static ArrayList<String> getNotifications(ObjectId userId) {
-        ArrayList<String> notifications = new ArrayList<>();
+    public static String getNotifications(ObjectId userId) {
+        List<String> notifications = new ArrayList<>();
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
         MongoCollection<Document> notificationsCollection = mongoClient.getDatabase("Users").getCollection("Notifications");
         for (Document notification : notificationsCollection.find()){
@@ -19,6 +20,6 @@ public class NotificationsGiver {
             }
         }
         mongoClient.close();
-        return notifications;
+        return "[" + String.join(",", notifications) + "]";
     }
 }

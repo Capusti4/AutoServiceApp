@@ -8,7 +8,6 @@ import org.Services.ActiveOrdersGiver;
 import org.Services.TokenChecker;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Map;
 
 import static org.Handlers.HandlerFunctions.*;
@@ -19,8 +18,8 @@ public class GetActiveOrdersHandler implements HttpHandler {
         try {
             Map<String, Object> data = getDataFromPost(exchange);
             TokenChecker.checkUserToken(data, exchange.getRequestURI().toString());
-            String[] activeOrders = ActiveOrdersGiver.getActiveOrders();
-            sendJsonResponse(exchange, Arrays.toString(activeOrders), 200);
+            String activeOrdersJson = ActiveOrdersGiver.getActiveOrders();
+            sendJsonResponse(exchange, activeOrdersJson, 200);
         } catch (NotAllowedHttpMethod | IncorrectSessionToken e) {
             sendStringResponse(exchange, e.getMessage(), 409);
         } catch (Exception e) {
