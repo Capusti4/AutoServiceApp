@@ -1,7 +1,5 @@
 package org.Services;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import org.Exceptions.IncorrectUsername;
 import org.Exceptions.PhoneNumberAlreadyExists;
@@ -16,8 +14,7 @@ import static org.Services.ServiceFunctions.getCollection;
 
 public class Registration {
     public static String[] register(User user, String requestURI) throws Exception {
-        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-        MongoCollection<Document> usersCollection = getCollection(mongoClient, requestURI);
+        MongoCollection<Document> usersCollection = getCollection(requestURI);
 
         String username = user.username();
         String phoneNum = user.phoneNum();
@@ -28,7 +25,6 @@ public class Registration {
 
         Document clientDoc = CreateClientDoc(user, token);
         usersCollection.insertOne(clientDoc);
-        mongoClient.close();
         clientDoc.remove("password");
         clientDoc.remove("_id");
         clientDoc.remove("sessionTokens");

@@ -1,9 +1,9 @@
 package org.Services;
 
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import org.Exceptions.IncorrectNotificationType;
+import org.MongoDBCollection;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -12,7 +12,7 @@ public class NotificationsCreator {
         if (typeId < 1 || typeId > 5) {
             throw new IncorrectNotificationType();
         }
-        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoClient mongoClient = MongoDBCollection.getClient();
         MongoCollection<Document> notificationsCollection = mongoClient.getDatabase("Users").getCollection("Notifications");
         Document notificationDocument;
         notificationDocument = new Document()
@@ -21,7 +21,6 @@ public class NotificationsCreator {
                 .append("text", text)
                 .append("isRead", false);
         notificationsCollection.insertOne(notificationDocument);
-        mongoClient.close();
     }
 }
 

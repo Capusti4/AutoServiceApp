@@ -1,9 +1,9 @@
 package org.Services;
 
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import org.Exceptions.IncorrectOrderId;
+import org.MongoDBCollection;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -11,7 +11,7 @@ import static org.Services.NotificationsCreator.createNotification;
 
 public class OrderCompleter {
     public static void completeOrder(ObjectId orderId, ObjectId workerId) throws Exception {
-        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoClient mongoClient = MongoDBCollection.getClient();
         MongoCollection<Document> activeOrdersCollection = mongoClient.getDatabase("Orders").getCollection("ActiveOrders");
         MongoCollection<Document> completedOrdersCollection = mongoClient.getDatabase("Orders").getCollection("CompletedOrders");
         Document found = activeOrdersCollection.find(new Document("_id", orderId).append("workerId", workerId)).first();
@@ -22,7 +22,6 @@ public class OrderCompleter {
         completedOrdersCollection.insertOne(found
                 .append("hasCustomerFeedback", false)
                 .append("hasWorkerFeedback", false));
-        mongoClient.close();
         sendNotifications(found);
     }
 

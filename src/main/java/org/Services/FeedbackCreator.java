@@ -1,9 +1,9 @@
 package org.Services;
 
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import org.Exceptions.UnknownOrderId;
+import org.MongoDBCollection;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -11,7 +11,7 @@ import static org.Services.NotificationsCreator.createNotification;
 
 public class FeedbackCreator {
     public static void createFeedback(ObjectId authorId, ObjectId targetId, ObjectId orderId, int rating, String comment) throws UnknownOrderId {
-        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoClient mongoClient = MongoDBCollection.getClient();
         MongoCollection<Document> feedbacksCollection = mongoClient.getDatabase("Users").getCollection("Feedbacks");
         MongoCollection<Document> completedOrdersCollection = mongoClient.getDatabase("Orders").getCollection("CompletedOrders");
         Document orderDoc = completedOrdersCollection.find(new Document("_id", orderId)).first();
@@ -31,7 +31,6 @@ public class FeedbackCreator {
         feedbacksCollection.insertOne(feedbackDocument);
         String text = createText(rating, comment);
         createNotification(targetId, 4, text);
-        mongoClient.close();
     }
 
     static String createText(int rating, String comment) {
