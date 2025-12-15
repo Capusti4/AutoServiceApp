@@ -2,9 +2,7 @@ package org.Handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.Exceptions.IncorrectOrderId;
-import org.Exceptions.IncorrectSessionToken;
-import org.Exceptions.NotAllowedHttpMethod;
+import org.Exceptions.AppException;
 import org.Services.OrderStarter;
 import org.Services.UserIdGiver;
 import org.bson.types.ObjectId;
@@ -23,10 +21,8 @@ public class StartOrderHandler implements HttpHandler {
             ObjectId orderId = new ObjectId((String) data.get("orderId"));
             OrderStarter.startOrder(orderId, workerId);
             sendStringResponse(exchange, "Заказ успешно взят в работу", 200);
-        } catch (NotAllowedHttpMethod | IncorrectSessionToken e) {
-            sendStringResponse(exchange, e.getMessage(), 409);
-        } catch (IncorrectOrderId e) {
-            sendStringResponse(exchange, e.getMessage(), 400);
+        } catch (AppException e) {
+            sendStringResponse(exchange, e.getMessage(), e.getHttpStatus());
         } catch (Exception e) {
             sendUnknownExceptionResponse(exchange, e);
         }

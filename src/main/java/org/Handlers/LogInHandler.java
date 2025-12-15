@@ -2,8 +2,7 @@ package org.Handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.Exceptions.IncorrectUsernameOrPassword;
-import org.Exceptions.NotAllowedHttpMethod;
+import org.Exceptions.AppException;
 import org.Services.LogIn;
 
 import java.io.IOException;
@@ -17,8 +16,8 @@ public class LogInHandler implements HttpHandler {
         try {
             String response = createResponse(exchange);
             sendJsonResponse(exchange, response, 200);
-        } catch (NotAllowedHttpMethod | IncorrectUsernameOrPassword e) {
-            sendStringResponse(exchange, e.getMessage(), 409);
+        } catch (AppException e) {
+            sendStringResponse(exchange, e.getMessage(), e.getHttpStatus());
         } catch (Exception e) {
             sendUnknownExceptionResponse(exchange, e);
         } finally {

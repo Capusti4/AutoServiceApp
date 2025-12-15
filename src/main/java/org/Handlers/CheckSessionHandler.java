@@ -2,8 +2,7 @@ package org.Handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.Exceptions.IncorrectSessionToken;
-import org.Exceptions.NotAllowedHttpMethod;
+import org.Exceptions.AppException;
 import org.Services.TokenChecker;
 import org.bson.Document;
 
@@ -21,8 +20,8 @@ public class CheckSessionHandler implements HttpHandler {
             String sessionToken = data.get("sessionToken").toString();
             Document user = TokenChecker.getUserData(username, sessionToken, String.valueOf(exchange.getRequestURI()));
             sendJsonResponse(exchange, user.toJson(), 200);
-        } catch (NotAllowedHttpMethod | IncorrectSessionToken e) {
-            sendStringResponse(exchange, e.getMessage(), 409);
+        } catch (AppException e) {
+            sendStringResponse(exchange, e.getMessage(), e.getHttpStatus());
         } catch (Exception e) {
             sendUnknownExceptionResponse(exchange, e);
         } finally {

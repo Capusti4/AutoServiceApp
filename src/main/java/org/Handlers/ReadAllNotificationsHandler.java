@@ -2,8 +2,7 @@ package org.Handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.Exceptions.IncorrectSessionToken;
-import org.Exceptions.NotAllowedHttpMethod;
+import org.Exceptions.AppException;
 import org.Services.NotificationReader;
 import org.Services.UserIdGiver;
 import org.bson.types.ObjectId;
@@ -21,8 +20,8 @@ public class ReadAllNotificationsHandler implements HttpHandler {
             ObjectId userId = UserIdGiver.getUserId(data, exchange.getRequestURI().toString());
             NotificationReader.readAllNotifications(userId);
             sendStringResponse(exchange, "Все уведомления успешно прочитаны", 200);
-        } catch (NotAllowedHttpMethod | IncorrectSessionToken e) {
-            sendStringResponse(exchange, e.getMessage(), 409);
+        } catch (AppException e) {
+            sendStringResponse(exchange, e.getMessage(), e.getHttpStatus());
         } catch (Exception e) {
             sendUnknownExceptionResponse(exchange, e);
         } finally {

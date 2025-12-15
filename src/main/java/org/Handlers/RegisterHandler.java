@@ -17,11 +17,8 @@ public class RegisterHandler implements HttpHandler {
             User user = createUser(exchange);
             String response = createResponse(user, exchange);
             sendJsonResponse(exchange, response, 201);
-        } catch (IncorrectName | IncorrectPhoneNumber | UsernameAlreadyExists | IncorrectUsername |
-                 PhoneNumberAlreadyExists | NotAllowedHttpMethod e) {
-            String errorResp = e.getMessage();
-            int errorCode = 500;
-            sendStringResponse(exchange, errorResp, errorCode);
+        } catch (AppException e) {
+            sendStringResponse(exchange, e.getMessage(), e.getHttpStatus());
         } catch (Exception e) {
             sendUnknownExceptionResponse(exchange, e);
         } finally {

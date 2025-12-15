@@ -2,7 +2,7 @@ package org.Services;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
-import org.Exceptions.UnknownOrderId;
+import org.Exceptions.IncorrectOrderId;
 import org.MongoDBCollection;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -10,13 +10,13 @@ import org.bson.types.ObjectId;
 import static org.Services.NotificationsCreator.createNotification;
 
 public class FeedbackCreator {
-    public static void createFeedback(ObjectId authorId, ObjectId targetId, ObjectId orderId, int rating, String comment) throws UnknownOrderId {
+    public static void createFeedback(ObjectId authorId, ObjectId targetId, ObjectId orderId, int rating, String comment) throws IncorrectOrderId {
         MongoClient mongoClient = MongoDBCollection.getClient();
         MongoCollection<Document> feedbacksCollection = mongoClient.getDatabase("Users").getCollection("Feedbacks");
         MongoCollection<Document> completedOrdersCollection = mongoClient.getDatabase("Orders").getCollection("CompletedOrders");
         Document orderDoc = completedOrdersCollection.find(new Document("_id", orderId)).first();
         if (orderDoc == null) {
-            throw new UnknownOrderId();
+            throw new IncorrectOrderId();
         }
         Document feedbackDocument = new Document()
                 .append("authorId", authorId)

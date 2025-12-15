@@ -1,7 +1,7 @@
 package org.Exceptions;
 
-public class IncorrectName extends RuntimeException {
+public class IncorrectName extends AppException {
     public IncorrectName() {
-        super("Ошибка ввода, имя или фамилия содержит недопустимые символы");
+        super("Ошибка ввода, имя или фамилия содержит недопустимые символы", 400);
     }
 }

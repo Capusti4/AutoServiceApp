@@ -2,8 +2,7 @@ package org.Handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.Exceptions.IncorrectSessionToken;
-import org.Exceptions.NotAllowedHttpMethod;
+import org.Exceptions.AppException;
 import org.Order;
 import org.Services.OrderCreator;
 import org.Services.UserIdGiver;
@@ -19,8 +18,8 @@ public class CreateOrderHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         try {
             createOrder(exchange);
-        } catch (NotAllowedHttpMethod | IncorrectSessionToken e) {
-            sendStringResponse(exchange, e.getMessage(), 409);
+        } catch (AppException e) {
+            sendStringResponse(exchange, e.getMessage(), e.getHttpStatus());
         } catch (Exception e) {
             sendUnknownExceptionResponse(exchange, e);
         } finally {

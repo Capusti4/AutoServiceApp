@@ -2,9 +2,7 @@ package org.Handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.Exceptions.IncorrectSessionToken;
-import org.Exceptions.NotAllowedHttpMethod;
-import org.Exceptions.UnknownOrderId;
+import org.Exceptions.AppException;
 import org.Services.FeedbackCreator;
 import org.Services.TokenChecker;
 import org.bson.types.ObjectId;
@@ -27,10 +25,8 @@ public class SendFeedbackHandler implements HttpHandler {
             String comment = (String) data.get("comment");
             FeedbackCreator.createFeedback(authorId, targetId, orderId, rating, comment);
             sendStringResponse(exchange, "Спасибо за Ваш отзыв!", 201);
-        } catch (NotAllowedHttpMethod | IncorrectSessionToken e) {
-            sendStringResponse(exchange, e.getMessage(), 409);
-        } catch (UnknownOrderId e) {
-            sendStringResponse(exchange, e.getMessage(), 400);
+        } catch (AppException e) {
+            sendStringResponse(exchange, e.getMessage(), e.getHttpStatus());
         } catch (Exception e) {
             sendUnknownExceptionResponse(exchange, e);
         } finally {

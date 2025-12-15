@@ -1,7 +1,7 @@
 package org.Exceptions;
 
-public class IncorrectSessionToken extends Exception {
+public class IncorrectSessionToken extends AppException {
     public IncorrectSessionToken() {
-        super("Токен сессии недействителен");
+        super("Токен сессии недействителен", 401);
     }
 }

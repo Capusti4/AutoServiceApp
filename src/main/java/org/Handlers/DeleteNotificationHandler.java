@@ -2,8 +2,7 @@ package org.Handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.Exceptions.IncorrectSessionToken;
-import org.Exceptions.NotAllowedHttpMethod;
+import org.Exceptions.AppException;
 import org.Services.NotificationDeleter;
 import org.Services.TokenChecker;
 import org.bson.types.ObjectId;
@@ -22,8 +21,8 @@ public class DeleteNotificationHandler implements HttpHandler {
             ObjectId notificationId = new ObjectId((String) data.get("notificationId"));
             NotificationDeleter.deleteNotification(notificationId);
             sendStringResponse(exchange, "Уведомление успешно удалено", 200);
-        } catch (NotAllowedHttpMethod | IncorrectSessionToken e) {
-            sendStringResponse(exchange, e.getMessage(), 409);
+        } catch (AppException e) {
+            sendStringResponse(exchange, e.getMessage(), e.getHttpStatus());
         } catch (Exception e) {
             sendUnknownExceptionResponse(exchange, e);
         } finally {
