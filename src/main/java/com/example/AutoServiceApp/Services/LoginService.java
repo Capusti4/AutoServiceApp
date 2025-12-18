@@ -12,7 +12,7 @@ import org.bson.Document;
 import static com.example.AutoServiceApp.Services.ServiceFunctions.generateSessionToken;
 import static com.example.AutoServiceApp.Services.ServiceFunctions.getCollection;
 
-public class Login {
+public class LoginService {
     public static LoginResponse login(LoginRequest request, String userType) {
         MongoCollection<Document> usersCollection = getCollection(userType);
         String username = request.username();

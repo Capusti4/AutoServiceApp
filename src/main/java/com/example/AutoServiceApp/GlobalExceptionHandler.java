@@ -8,9 +8,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger logger =
+            Logger.getLogger(GlobalExceptionHandler.class.getName());
     @ExceptionHandler(AppException.class)
     public ResponseEntity<Map<String, String>> handleAppException(AppException e) {
         return ResponseEntity
@@ -20,7 +24,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({Exception.class, JsonProcessingException.class})
     public ResponseEntity<Map<String, String>> handleUnknownException(Exception e) {
-        e.printStackTrace();
+        logger.log(Level.SEVERE, e.getMessage(), e);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "Внутренняя ошибка сервера"));

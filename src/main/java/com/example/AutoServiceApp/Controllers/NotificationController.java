@@ -1,28 +1,28 @@
 package com.example.AutoServiceApp.Controllers;
 
+import com.example.AutoServiceApp.DTO.SessionDTO;
 import com.example.AutoServiceApp.Services.*;
 import com.example.AutoServiceApp.Exceptions.AppException;
 import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 public class NotificationController {
-    @PostMapping("/{userType}/deleteNotification")
+    @DeleteMapping("/{userType}/deleteNotification/{notificationId}")
     public ResponseEntity<?> deleteNotification(
             @PathVariable String userType,
-            @RequestBody Map<String, Object> data
+            @PathVariable ObjectId notificationId,
+            @RequestHeader("Username") String username,
+            @RequestHeader("Session-Token") String sessionToken
     ) {
         try {
-            TokenChecker.checkUserToken(data, userType);
-            ObjectId notificationId = new ObjectId((String) data.get("notificationId"));
-            NotificationDeleter.deleteNotification(notificationId);
+            SessionDTO user = new SessionDTO(username, sessionToken);
+            TokensService.checkUserToken(user, userType);
+            NotificationsService.deleteNotification(notificationId);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(Map.of("message", "Уведомление успешно удалено"));
         } catch (AppException e) {
@@ -34,14 +34,16 @@ public class NotificationController {
         }
     }
 
-    @PostMapping("/{userType}/getNotifications")
+    @GetMapping("/{userType}/getNotifications")
     public ResponseEntity<?> getNotifications(
             @PathVariable String userType,
-            @RequestBody Map<String, Object> data
+            @RequestHeader("Username") String username,
+            @RequestHeader("Session-Token") String sessionToken
     ) {
         try {
-            ObjectId userId = UserIdGiver.getUserId(data, userType);
-            String notificationsJson = NotificationsGiver.getNotifications(userId);
+            SessionDTO user = new SessionDTO(username, sessionToken);
+            ObjectId userId = UserIdService.getUserId(user, userType);
+            String notificationsJson = NotificationsService.getNotifications(userId);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(notificationsJson);
         } catch (AppException e) {
@@ -53,14 +55,16 @@ public class NotificationController {
         }
     }
 
-    @PostMapping("/{userType}/getNotificationsAmount")
+    @GetMapping("/{userType}/getNotificationsAmount")
     public ResponseEntity<?> getNotificationsAmount(
             @PathVariable String userType,
-            @RequestBody Map<String, Object> data
+            @RequestHeader("Username") String username,
+            @RequestHeader("Session-Token") String sessionToken
     ) {
         try {
-            ObjectId userId = UserIdGiver.getUserId(data, userType);
-            int amount = NotificationsAmountGiver.getNotificationsAmount(userId);
+            SessionDTO user = new SessionDTO(username, sessionToken);
+            ObjectId userId = UserIdService.getUserId(user, userType);
+            int amount = NotificationsService.getNotificationsAmount(userId);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(amount);
         } catch (AppException e) {
@@ -72,15 +76,17 @@ public class NotificationController {
         }
     }
 
-    @PostMapping("/{userType}/readNotification")
+    @PatchMapping("/{userType}/readNotification/{notificationId}")
     public ResponseEntity<?> readNotification(
             @PathVariable String userType,
-            @RequestBody Map<String, Object> data
+            @PathVariable ObjectId notificationId,
+            @RequestHeader("Username") String username,
+            @RequestHeader("Session-Token") String sessionToken
     ) {
         try {
-            TokenChecker.checkUserToken(data, userType);
-            ObjectId notificationId = new ObjectId((String) data.get("notificationId"));
-            NotificationReader.readNotification(notificationId);
+            SessionDTO user = new SessionDTO(username, sessionToken);
+            TokensService.checkUserToken(user, userType);
+            NotificationsService.readNotification(notificationId);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(Map.of("message", "Сообщение прочитано"));
         } catch (AppException e) {
@@ -92,14 +98,16 @@ public class NotificationController {
         }
     }
 
-    @PostMapping("/{userType}/readAllNotifications")
+    @PatchMapping("/{userType}/readAllNotifications")
     public ResponseEntity<?> readAllNotifications(
             @PathVariable String userType,
-            @RequestBody Map<String, Object> data
+            @RequestHeader("Username") String username,
+            @RequestHeader("Session-Token") String sessionToken
     ) {
         try {
-            ObjectId userId = UserIdGiver.getUserId(data, userType);
-            NotificationReader.readAllNotifications(userId);
+            SessionDTO user = new SessionDTO(username, sessionToken);
+            ObjectId userId = UserIdService.getUserId(user, userType);
+            NotificationsService.readAllNotifications(userId);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(Map.of("message", "Все уведомления успешно прочитаны"));
         } catch (AppException e) {

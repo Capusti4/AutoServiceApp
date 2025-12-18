@@ -15,7 +15,7 @@ import java.util.Collections;
 import static com.example.AutoServiceApp.Services.ServiceFunctions.generateSessionToken;
 import static com.example.AutoServiceApp.Services.ServiceFunctions.getCollection;
 
-public class Registration {
+public class RegistrationService {
     public static RegisterResponse register(User user, String userType) {
         MongoCollection<Document> usersCollection = getCollection(userType);
 
