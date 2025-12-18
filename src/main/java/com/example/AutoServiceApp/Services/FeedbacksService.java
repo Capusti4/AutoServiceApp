@@ -1,5 +1,7 @@
 package com.example.AutoServiceApp.Services;
 
+import com.example.AutoServiceApp.DTO.FeedbackDTO;
+import com.example.AutoServiceApp.DTO.FeedbackResponse;
 import com.example.AutoServiceApp.DTO.SendFeedbackRequest;
 import com.example.AutoServiceApp.Exceptions.IncorrectOrderId;
 import com.example.AutoServiceApp.Objects.MongoDBCollection;
@@ -55,27 +57,41 @@ public class FeedbacksService {
         return "Вам оставили отзыв:\n" + rating + rightWordForm + "\n\"" + comment + "\"";
     }
 
-    public static String getFeedbacksForUser(ObjectId userId) {
+    public static FeedbackResponse getFeedbacksForUser(ObjectId userId) {
         MongoClient mongoClient = MongoDBCollection.getClient();
         MongoCollection<Document> feedbacksCollection = mongoClient.getDatabase("Users").getCollection("Feedbacks");
-        List<String> feedbacks = new ArrayList<>();
+        List<FeedbackDTO> feedbacks = new ArrayList<>();
         for (Document feedback : feedbacksCollection.find()) {
             if (feedback.get("targetId").equals(userId)) {
-                feedbacks.add(feedback.toJson());
+                FeedbackDTO feedbackDTO = new FeedbackDTO(
+                        (ObjectId) feedback.get("_id"),
+                        (ObjectId) feedback.get("authorId"),
+                        (ObjectId) feedback.get("targetId"),
+                        (Integer) feedback.get("rating"),
+                        (String) feedback.get("comment")
+                );
+                feedbacks.add(feedbackDTO);
             }
         }
-        return "[" + String.join(",", feedbacks) + "]";
+        return new FeedbackResponse(feedbacks);
     }
 
-    public static String getFeedbacksByUser(ObjectId userId) {
+    public static FeedbackResponse getFeedbacksByUser(ObjectId userId) {
         MongoClient mongoClient = MongoDBCollection.getClient();
         MongoCollection<Document> feedbacksCollection = mongoClient.getDatabase("Users").getCollection("Feedbacks");
-        List<String> feedbacks = new ArrayList<>();
+        List<FeedbackDTO> feedbacks = new ArrayList<>();
         for (Document feedback : feedbacksCollection.find()) {
             if (feedback.get("authorId").equals(userId)) {
-                feedbacks.add(feedback.toJson());
+                FeedbackDTO feedbackDTO = new FeedbackDTO(
+                        (ObjectId) feedback.get("_id"),
+                        (ObjectId) feedback.get("authorId"),
+                        (ObjectId) feedback.get("targetId"),
+                        (Integer) feedback.get("rating"),
+                        (String) feedback.get("comment")
+                );
+                feedbacks.add(feedbackDTO);
             }
         }
-        return "[" + String.join(",", feedbacks) + "]";
+        return new FeedbackResponse(feedbacks);
     }
 }

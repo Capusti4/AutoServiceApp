@@ -1,5 +1,7 @@
 package com.example.AutoServiceApp.Services;
 
+import com.example.AutoServiceApp.DTO.GetOrderResponse;
+import com.example.AutoServiceApp.DTO.OrderDTO;
 import com.example.AutoServiceApp.Exceptions.IncorrectOrderId;
 import com.example.AutoServiceApp.Exceptions.IncorrectSessionToken;
 import com.example.AutoServiceApp.Objects.MongoDBCollection;
@@ -9,9 +11,9 @@ import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import static com.example.AutoServiceApp.Services.ServiceFunctions.getOrders;
 
 public class OrdersService {
     public static void createOrder(Order order) {
@@ -21,7 +23,9 @@ public class OrdersService {
                 .append("customerId", order.getCustomerId())
                 .append("typeID", order.getTypeID())
                 .append("type", order.getType())
-                .append("comment", order.getComment());
+                .append("comment", order.getComment())
+                .append("hasCustomerFeedback", false)
+                .append("hasWorkerFeedback", false);
         collection.insertOne(orderDoc);
     }
 
@@ -54,34 +58,69 @@ public class OrdersService {
         );
     }
 
-    public static String getActiveOrders() {
-        MongoClient mongoClient = MongoDBCollection.getClient();
-        MongoCollection<Document> activeOrdersCollection = mongoClient.getDatabase("Orders").getCollection("ActiveOrders");
-        List<String> activeOrders = getOrders(activeOrdersCollection);
-        if (activeOrders.isEmpty()) {
-            return "[]";
-        }
-        return "[" + String.join(",", activeOrders) + "]";
-    }
-
-    public static String getCompletedOrders() {
-        MongoClient mongoClient = MongoDBCollection.getClient();
-        MongoCollection<Document> completedOrdersCollection = mongoClient.getDatabase("Orders").getCollection("CompletedOrders");
-        List<String> completedOrders = getOrders(completedOrdersCollection);
-        if (completedOrders.isEmpty()) {
-            return "[]";
-        }
-        return "[" + String.join(",", completedOrders) + "]";
-    }
-
-    public static String getNewOrdersList() throws IncorrectSessionToken {
+    public static GetOrderResponse getNewOrdersList() throws IncorrectSessionToken {
         MongoClient mongoClient = MongoDBCollection.getClient();
         MongoCollection<Document> newOrdersCollection = mongoClient.getDatabase("Orders").getCollection("NewOrders");
-        List<String> newOrders = getOrders(newOrdersCollection);
-        if (newOrders.isEmpty()) {
-            return "[]";
+        List<OrderDTO> newOrders = getOrders(newOrdersCollection);
+        return new GetOrderResponse(newOrders);
+    }
+
+    public static GetOrderResponse getActiveOrders(ObjectId workerId) {
+        MongoClient mongoClient = MongoDBCollection.getClient();
+        MongoCollection<Document> activeOrdersCollection = mongoClient.getDatabase("Orders").getCollection("ActiveOrders");
+        List<OrderDTO> activeOrders = getOrders(activeOrdersCollection);
+        activeOrders.removeIf(activeOrder -> !activeOrder.workerId().equals(workerId));
+        return new GetOrderResponse(activeOrders);
+    }
+
+    public static GetOrderResponse getCompletedOrders(ObjectId workerId) {
+        MongoClient mongoClient = MongoDBCollection.getClient();
+        MongoCollection<Document> completedOrdersCollection = mongoClient.getDatabase("Orders").getCollection("CompletedOrders");
+        List<OrderDTO> completedOrders = getOrders(completedOrdersCollection);
+        completedOrders.removeIf(completedOrder -> !completedOrder.workerId().equals(workerId));
+        return new GetOrderResponse(completedOrders);
+    }
+
+    static List<OrderDTO> getOrders(MongoCollection<Document> ordersCollection) {
+        List<OrderDTO> orders = new ArrayList<>();
+        List<ObjectId> toDelete = new ArrayList<>();
+        List<Document> allOrders = ordersCollection.find().into(new ArrayList<>());
+        MongoClient mongoClient = MongoDBCollection.getClient();
+
+        MongoCollection<Document> clientsCollection = mongoClient.getDatabase("Users").getCollection("Clients");
+        Set<Object> customersId = allOrders.stream()
+                .map(order -> order.get("customerId"))
+                .collect(Collectors.toSet());
+        Map<Object, Document> customersMap = new HashMap<>();
+        clientsCollection.find(new Document("_id", new Document("$in", customersId)))
+                .forEach(customer -> customersMap.put(customer.get("_id"), customer));
+
+        for (Document order : ordersCollection.find()) {
+            Document customer = customersMap.get(order.get("customerId"));
+            if (customer == null) {
+                toDelete.add(new ObjectId(order.get("_id").toString()));
+            } else {
+                order.append("customerFirstName", customer.get("firstName"));
+                order.append("customerLastName", customer.get("lastName"));
+                order.append("customerPhoneNum", customer.get("phoneNumber"));
+                orders.add(new OrderDTO(
+                        (ObjectId) order.get("_id"),
+                        (ObjectId) order.get("customerId"),
+                        (Integer) order.get("typeId"),
+                        (String) order.get("type"),
+                        (String) order.get("comment"),
+                        (ObjectId) order.get("workerId"),
+                        (Boolean) order.get("hasCustomerFeedback"),
+                        (Boolean) order.get("hasWorkerFeedback")
+                ));
+            }
         }
-        return "[" + String.join(",", newOrders) + "]";
+
+        if (!toDelete.isEmpty()) {
+            ordersCollection.deleteMany(new Document("_id", new Document("$in", toDelete)));
+        }
+
+        return orders;
     }
 
     public static void startOrder(ObjectId orderId, ObjectId workerId) {

@@ -1,5 +1,7 @@
 package com.example.AutoServiceApp.Services;
 
+import com.example.AutoServiceApp.DTO.GetNotificationsResponse;
+import com.example.AutoServiceApp.DTO.NotificationDTO;
 import com.example.AutoServiceApp.Exceptions.IncorrectNotificationId;
 import com.example.AutoServiceApp.Exceptions.IncorrectNotificationType;
 import com.example.AutoServiceApp.Objects.MongoDBCollection;
@@ -68,15 +70,22 @@ public class NotificationsService {
         notificationsCollection.insertOne(notificationDocument);
     }
 
-    public static String getNotifications(ObjectId userId) {
-        List<String> notifications = new ArrayList<>();
+    public static GetNotificationsResponse getNotifications(ObjectId userId) {
+        List<NotificationDTO> notifications = new ArrayList<>();
         MongoClient mongoClient = MongoDBCollection.getClient();
         MongoCollection<Document> notificationsCollection = mongoClient.getDatabase("Users").getCollection("Notifications");
         for (Document notification : notificationsCollection.find()){
             if (notification.get("userId").equals(userId)){
-                notifications.add(notification.toJson());
+                NotificationDTO notificationDTO = new NotificationDTO(
+                        (ObjectId) notification.get("_id"),
+                        (ObjectId) notification.get("userId"),
+                        (Integer) notification.get("typeId"),
+                        (String) notification.get("text"),
+                        (Boolean) notification.get("isRead")
+                );
+                notifications.add(notificationDTO);
             }
         }
-        return "[" + String.join(",", notifications) + "]";
+        return new GetNotificationsResponse(notifications);
     }
 }

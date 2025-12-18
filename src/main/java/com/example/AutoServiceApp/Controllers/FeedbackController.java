@@ -20,8 +20,8 @@ public class FeedbackController {
     ) {
         WithUserDataDTO user = new SessionDTO(username, sessionToken);
         ObjectId userId = UserIdService.getUserId(user, userType);
-        String feedbacksJson = FeedbacksService.getFeedbacksByUser(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(feedbacksJson);
+        FeedbackResponse response = FeedbacksService.getFeedbacksByUser(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{userType}/getFeedbacksForUser")
@@ -32,8 +32,8 @@ public class FeedbackController {
     ) {
         WithUserDataDTO user = new SessionDTO(username, sessionToken);
         ObjectId userId = UserIdService.getUserId(user, userType);
-        String feedbacksJson = FeedbacksService.getFeedbacksForUser(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(feedbacksJson);
+        FeedbackResponse response = FeedbacksService.getFeedbacksForUser(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping("/{userType}/sendFeedback")

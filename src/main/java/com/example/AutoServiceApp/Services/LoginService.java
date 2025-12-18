@@ -31,7 +31,7 @@ public class LoginService {
                 (String) user.get("username"),
                 (String) user.get("firstName"),
                 (String) user.get("lastName"),
-                (String) user.get("phoneNum")
+                (String) user.get("phoneNumber")
         );
         SessionDTO sessionDTO = new SessionDTO(
                 (String) user.get("username"),

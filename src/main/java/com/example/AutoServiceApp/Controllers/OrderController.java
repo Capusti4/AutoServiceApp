@@ -1,6 +1,7 @@
 package com.example.AutoServiceApp.Controllers;
 
 import com.example.AutoServiceApp.DTO.CreateOrderRequest;
+import com.example.AutoServiceApp.DTO.GetOrderResponse;
 import com.example.AutoServiceApp.DTO.SessionDTO;
 import com.example.AutoServiceApp.Objects.Order;
 import com.example.AutoServiceApp.Services.*;
@@ -63,8 +64,8 @@ public class OrderController {
     ) {
         SessionDTO user = new SessionDTO(username, sessionToken);
         TokensService.checkUserToken(user, "worker");
-        String newOrdersJson = OrdersService.getNewOrdersList();
-        return ResponseEntity.status(HttpStatus.OK).body(newOrdersJson);
+        GetOrderResponse response = OrdersService.getNewOrdersList();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/worker/getActiveOrders")
@@ -73,9 +74,9 @@ public class OrderController {
             @RequestHeader("Session-Token") String sessionToken
     ) {
         SessionDTO user = new SessionDTO(username, sessionToken);
-        TokensService.checkUserToken(user, "worker");
-        String activeOrdersJson = OrdersService.getActiveOrders();
-        return ResponseEntity.status(HttpStatus.OK).body(activeOrdersJson);
+        ObjectId workerId = UserIdService.getUserId(user, "worker");
+        GetOrderResponse response = OrdersService.getActiveOrders(workerId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/worker/getCompletedOrders")
@@ -84,8 +85,8 @@ public class OrderController {
             @RequestHeader("Session-Token") String sessionToken
     ) {
         SessionDTO user = new SessionDTO(username, sessionToken);
-        TokensService.checkUserToken(user, "worker");
-        String completedOrdersJson = OrdersService.getCompletedOrders();
-        return ResponseEntity.status(HttpStatus.OK).body(completedOrdersJson);
+        ObjectId workerId = UserIdService.getUserId(user, "worker");
+        GetOrderResponse response = OrdersService.getCompletedOrders(workerId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

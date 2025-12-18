@@ -20,9 +20,9 @@ public class RegistrationService {
         MongoCollection<Document> usersCollection = getCollection(userType);
 
         String username = user.username();
-        String phoneNum = user.phoneNum();
+        String phoneNumber = user.phoneNumber();
         checkUsername(usersCollection, username);
-        CheckPhoneNumber(usersCollection, phoneNum);
+        CheckPhoneNumber(usersCollection, phoneNumber);
 
         String token = generateSessionToken();
 
@@ -33,7 +33,7 @@ public class RegistrationService {
                 user.username(),
                 user.firstName(),
                 user.lastName(),
-                user.phoneNum()
+                user.phoneNumber()
         );
         SessionDTO sessionDTO = new SessionDTO(
                 user.username(),
@@ -57,8 +57,8 @@ public class RegistrationService {
         }
     }
 
-    static void CheckPhoneNumber(MongoCollection<Document> usersCollection, String phoneNum) {
-        Document found = usersCollection.find(new Document("phoneNum", phoneNum)).first();
+    static void CheckPhoneNumber(MongoCollection<Document> usersCollection, String phoneNumber) {
+        Document found = usersCollection.find(new Document("phoneNumber", phoneNumber)).first();
         if (found != null) {
             throw new PhoneNumberAlreadyExists();
         }
@@ -69,7 +69,7 @@ public class RegistrationService {
                 .append("username", user.username())
                 .append("firstName", user.firstName())
                 .append("lastName", user.lastName())
-                .append("phoneNum", user.phoneNum())
+                .append("phoneNumber", user.phoneNumber())
                 .append("password", user.password())
                 .append("sessionTokens", Collections.singletonList(token));
     }
