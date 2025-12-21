@@ -20,12 +20,9 @@ public class FeedbacksService {
         ObjectId orderId = new ObjectId(request.orderId());
         MongoClient mongoClient = MongoDBCollection.getClient();
         MongoCollection<Document> feedbacksCollection = mongoClient.getDatabase("Users").getCollection("Feedbacks");
-        MongoCollection<Document> completedOrdersCollection = mongoClient.getDatabase("Orders").getCollection("CompletedOrders");
+        MongoCollection<Document> completedOrdersCollection = mongoClient.getDatabase("Users").getCollection("Orders");
 
-        Document orderDoc = completedOrdersCollection.find(new Document("_id", orderId)).first();
-        if (orderDoc == null) {
-            throw new IncorrectOrderId();
-        }
+        Document orderDoc = OrdersService.getOrder(completedOrdersCollection, orderId);
 
         Document feedbackDocument = new Document()
                 .append("authorId", authorId)

@@ -1,7 +1,7 @@
 package com.example.AutoServiceApp.Controllers;
 
-import com.example.AutoServiceApp.DTO.CreateOrderRequest;
-import com.example.AutoServiceApp.DTO.GetOrderResponse;
+import com.example.AutoServiceApp.DTO.GetOrdersResponse;
+import com.example.AutoServiceApp.DTO.MakeOrderRequest;
 import com.example.AutoServiceApp.DTO.SessionDTO;
 import com.example.AutoServiceApp.Objects.Order;
 import com.example.AutoServiceApp.Services.*;
@@ -41,9 +41,9 @@ public class OrderController {
 
     }
 
-    @PostMapping("/client/createOrder")
-    public ResponseEntity<?> createOrder(
-            @RequestBody CreateOrderRequest request
+    @PostMapping("/client/makeOrder")
+    public ResponseEntity<?> makeOrder(
+            @RequestBody MakeOrderRequest request
     ) {
         ObjectId userId = UserIdService.getUserId(request, "client");
         Order order;
@@ -57,36 +57,17 @@ public class OrderController {
                 .body(Map.of("message", "Заказ успешно создан"));
     }
 
-    @GetMapping("/worker/getNewOrders")
-    public ResponseEntity<?> getNewOrders(
+    @GetMapping("/{userType}/getOrders")
+    public ResponseEntity<?> getClientOrders(
+            @PathVariable String userType,
             @RequestHeader("Username") String username,
             @RequestHeader("Session-Token") String sessionToken
     ) {
         SessionDTO user = new SessionDTO(username, sessionToken);
-        TokensService.checkUserToken(user, "worker");
-        GetOrderResponse response = OrdersService.getNewOrdersList();
+        ObjectId userId = UserIdService.getUserId(user, userType);
+        GetOrdersResponse response = OrdersService.getUserOrders(userId, userType);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("/worker/getActiveOrders")
-    public ResponseEntity<?> getActiveOrders(
-            @RequestHeader("Username") String username,
-            @RequestHeader("Session-Token") String sessionToken
-    ) {
-        SessionDTO user = new SessionDTO(username, sessionToken);
-        ObjectId workerId = UserIdService.getUserId(user, "worker");
-        GetOrderResponse response = OrdersService.getActiveOrders(workerId);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
 
-    @GetMapping("/worker/getCompletedOrders")
-    public ResponseEntity<?> getCompletedOrders(
-            @RequestHeader("Username") String username,
-            @RequestHeader("Session-Token") String sessionToken
-    ) {
-        SessionDTO user = new SessionDTO(username, sessionToken);
-        ObjectId workerId = UserIdService.getUserId(user, "worker");
-        GetOrderResponse response = OrdersService.getCompletedOrders(workerId);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
 }

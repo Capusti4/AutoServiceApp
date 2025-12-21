@@ -34,6 +34,16 @@ public class NotificationsService {
             throw new IncorrectNotificationId();
         }
     }
+    public static void unreadNotification(ObjectId notificationId) {
+        MongoClient mongoClient = MongoDBCollection.getClient();
+        MongoCollection<Document> notificationsCollection = mongoClient.getDatabase("Users").getCollection("Notifications");
+        Document found = notificationsCollection.find(new Document("_id", notificationId)).first();
+        if (found != null) {
+            notificationsCollection.updateOne(found, new Document("$set", new Document("isRead", false)));
+        } else {
+            throw new IncorrectNotificationId();
+        }
+    }
 
     public static void readAllNotifications(ObjectId userId) {
         MongoClient mongoClient = MongoDBCollection.getClient();
@@ -77,8 +87,8 @@ public class NotificationsService {
         for (Document notification : notificationsCollection.find()){
             if (notification.get("userId").equals(userId)){
                 NotificationDTO notificationDTO = new NotificationDTO(
-                        (ObjectId) notification.get("_id"),
-                        (ObjectId) notification.get("userId"),
+                        notification.get("_id").toString(),
+                        notification.get("userId").toString(),
                         (Integer) notification.get("typeId"),
                         (String) notification.get("text"),
                         (Boolean) notification.get("isRead")

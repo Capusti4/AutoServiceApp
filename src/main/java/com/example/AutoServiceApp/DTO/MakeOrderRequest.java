@@ -1,6 +1,6 @@
 package com.example.AutoServiceApp.DTO;
 
-public record CreateOrderRequest(
+public record MakeOrderRequest(
         String username,
         String sessionToken,
         int orderTypeId,

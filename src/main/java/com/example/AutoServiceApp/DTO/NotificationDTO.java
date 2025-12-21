@@ -1,10 +1,8 @@
 package com.example.AutoServiceApp.DTO;
 
-import org.bson.types.ObjectId;
-
 public record NotificationDTO(
-        ObjectId id,
-        ObjectId userId,
+        String _id,
+        String userId,
         int typeId,
         String text,
         boolean isRead

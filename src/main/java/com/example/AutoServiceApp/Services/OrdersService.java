@@ -1,6 +1,6 @@
 package com.example.AutoServiceApp.Services;
 
-import com.example.AutoServiceApp.DTO.GetOrderResponse;
+import com.example.AutoServiceApp.DTO.GetOrdersResponse;
 import com.example.AutoServiceApp.DTO.OrderDTO;
 import com.example.AutoServiceApp.Exceptions.IncorrectOrderId;
 import com.example.AutoServiceApp.Exceptions.IncorrectSessionToken;
@@ -18,74 +18,89 @@ import java.util.stream.Collectors;
 public class OrdersService {
     public static void createOrder(Order order) {
         MongoClient mongoClient = MongoDBCollection.getClient();
-        MongoCollection<Document> collection = mongoClient.getDatabase("Orders").getCollection("NewOrders");
+        MongoCollection<Document> ordersCollection = mongoClient.getDatabase("Users").getCollection("Orders");
+        String comment = order.getComment();
+        if (order.getComment().isEmpty()) {
+            comment = null;
+        }
         Document orderDoc = new Document()
                 .append("customerId", order.getCustomerId())
-                .append("typeID", order.getTypeID())
+                .append("typeId", order.getTypeID())
                 .append("type", order.getType())
-                .append("comment", order.getComment())
+                .append("comment", comment)
+                .append("status", "new")
                 .append("hasCustomerFeedback", false)
                 .append("hasWorkerFeedback", false);
-        collection.insertOne(orderDoc);
+        ordersCollection.insertOne(orderDoc);
+    }
+
+    public static void startOrder(ObjectId orderId, ObjectId workerId) {
+        MongoClient mongoClient = MongoDBCollection.getClient();
+        MongoCollection<Document> ordersCollection = mongoClient.getDatabase("Users").getCollection("Orders");
+        Document order = getOrder(ordersCollection, orderId);
+        if (order.get("status").equals("new")) {
+            ordersCollection.updateOne(order, new Document("$set", new Document("status", "active")
+                    .append("workerId", workerId)));
+            String text = "Ваш заказ \"" + order.get("type") + "\" с комментарием \"" + order.get("comment") + "\" успешно взят в работу!";
+            NotificationsService.createNotification((ObjectId) order.get("customerId"), 2, text);
+        } else {
+            throw new IncorrectOrderId();
+        }
     }
 
     public static void completeOrder(ObjectId orderId, ObjectId workerId) {
         MongoClient mongoClient = MongoDBCollection.getClient();
-        MongoCollection<Document> activeOrdersCollection = mongoClient.getDatabase("Orders").getCollection("ActiveOrders");
-        MongoCollection<Document> completedOrdersCollection = mongoClient.getDatabase("Orders").getCollection("CompletedOrders");
-        Document found = activeOrdersCollection.find(new Document("_id", orderId).append("workerId", workerId)).first();
+        MongoCollection<Document> ordersCollection = mongoClient.getDatabase("Users").getCollection("Orders");
+        Document order = getOrder(ordersCollection, orderId);
+        if (order.get("status").equals("active") && order.get("workerId").equals(workerId)) {
+            ordersCollection.updateOne(order, new Document("$set", new Document("status", "completed")));
+            NotificationsService.createNotification(
+                    (ObjectId) order.get("customerId"),
+                    3,
+                    "Ваш заказ \"" + order.get("type") + "\" с комментарием \"" +
+                    order.get("comment") + "\" успешно завершен!"
+            );
+            NotificationsService.createNotification(
+                    workerId, 5, "Вы завершили заказ " + order.get("_id").toString()
+            );
+        } else {
+            throw new IncorrectOrderId();
+        }
+    }
+
+    static Document getOrder(MongoCollection<Document> ordersCollection, ObjectId orderId) {
+        Document found = ordersCollection.find(new Document("_id", orderId)).first();
         if (found == null) {
             throw new IncorrectOrderId();
         }
-        activeOrdersCollection.deleteOne(found);
-        completedOrdersCollection.insertOne(found
-                .append("hasCustomerFeedback", false)
-                .append("hasWorkerFeedback", false));
-        sendNotifications(found);
+        return found;
     }
 
-    static void sendNotifications(Document found) {
-        ObjectId workerId = (ObjectId) found.get("workerId");
-        ObjectId customerId = (ObjectId) found.get("customerId");
-        NotificationsService.createNotification(
-                customerId,
-                3,
-                "Ваш заказ \"" + found.get("type") + "\" с комментарием \"" +
-                found.get("comment") + "\" успешно завершен!"
-        );
-        NotificationsService.createNotification(
-                workerId, 5, "Вы завершили заказ " + found.get("_id").toString()
-        );
+    public static GetOrdersResponse getUserOrders(ObjectId userId, String userType) throws IncorrectSessionToken {
+        List<OrderDTO> allOrders = getOrders();
+        List<OrderDTO> orders = new ArrayList<>();
+        if (userType.equals("client")) {
+            for (OrderDTO order : allOrders) {
+                if (order.customerId().equals(userId.toString())) {
+                    orders.add(order);
+                }
+            }
+        } else if (userType.equals("worker")) {
+            for (OrderDTO order : allOrders) {
+                if (order.workerId().equals(userId.toString()) || order.status().equals("new")) {
+                    orders.add(order);
+                }
+            }
+        }
+        return new GetOrdersResponse(orders);
     }
 
-    public static GetOrderResponse getNewOrdersList() throws IncorrectSessionToken {
+    static List<OrderDTO> getOrders() {
         MongoClient mongoClient = MongoDBCollection.getClient();
-        MongoCollection<Document> newOrdersCollection = mongoClient.getDatabase("Orders").getCollection("NewOrders");
-        List<OrderDTO> newOrders = getOrders(newOrdersCollection);
-        return new GetOrderResponse(newOrders);
-    }
-
-    public static GetOrderResponse getActiveOrders(ObjectId workerId) {
-        MongoClient mongoClient = MongoDBCollection.getClient();
-        MongoCollection<Document> activeOrdersCollection = mongoClient.getDatabase("Orders").getCollection("ActiveOrders");
-        List<OrderDTO> activeOrders = getOrders(activeOrdersCollection);
-        activeOrders.removeIf(activeOrder -> !activeOrder.workerId().equals(workerId));
-        return new GetOrderResponse(activeOrders);
-    }
-
-    public static GetOrderResponse getCompletedOrders(ObjectId workerId) {
-        MongoClient mongoClient = MongoDBCollection.getClient();
-        MongoCollection<Document> completedOrdersCollection = mongoClient.getDatabase("Orders").getCollection("CompletedOrders");
-        List<OrderDTO> completedOrders = getOrders(completedOrdersCollection);
-        completedOrders.removeIf(completedOrder -> !completedOrder.workerId().equals(workerId));
-        return new GetOrderResponse(completedOrders);
-    }
-
-    static List<OrderDTO> getOrders(MongoCollection<Document> ordersCollection) {
+        MongoCollection<Document> ordersCollection = mongoClient.getDatabase("Users").getCollection("Orders");
         List<OrderDTO> orders = new ArrayList<>();
         List<ObjectId> toDelete = new ArrayList<>();
         List<Document> allOrders = ordersCollection.find().into(new ArrayList<>());
-        MongoClient mongoClient = MongoDBCollection.getClient();
 
         MongoCollection<Document> clientsCollection = mongoClient.getDatabase("Users").getCollection("Clients");
         Set<Object> customersId = allOrders.stream()
@@ -100,16 +115,20 @@ public class OrdersService {
             if (customer == null) {
                 toDelete.add(new ObjectId(order.get("_id").toString()));
             } else {
-                order.append("customerFirstName", customer.get("firstName"));
-                order.append("customerLastName", customer.get("lastName"));
-                order.append("customerPhoneNum", customer.get("phoneNumber"));
+                String workerId;
+                if (order.get("workerId") == null) {
+                    workerId = null;
+                } else {
+                    workerId = order.get("workerId").toString();
+                }
                 orders.add(new OrderDTO(
-                        (ObjectId) order.get("_id"),
-                        (ObjectId) order.get("customerId"),
+                        order.get("_id").toString(),
+                        order.get("customerId").toString(),
                         (Integer) order.get("typeId"),
                         (String) order.get("type"),
                         (String) order.get("comment"),
-                        (ObjectId) order.get("workerId"),
+                        workerId,
+                        (String) order.get("status"),
                         (Boolean) order.get("hasCustomerFeedback"),
                         (Boolean) order.get("hasWorkerFeedback")
                 ));
@@ -121,22 +140,5 @@ public class OrdersService {
         }
 
         return orders;
-    }
-
-    public static void startOrder(ObjectId orderId, ObjectId workerId) {
-        MongoClient mongoClient = MongoDBCollection.getClient();
-        MongoCollection<Document> newOrdersCollection = mongoClient.getDatabase("Orders").getCollection("NewOrders");
-        Document orderInfo = newOrdersCollection.find(new Document("_id", orderId)).first();
-        if (orderInfo == null) {
-            throw new IncorrectOrderId();
-        }
-
-        newOrdersCollection.deleteOne(orderInfo);
-        orderInfo.append("workerId", workerId);
-        MongoCollection<Document> activeOrdersCollection = mongoClient.getDatabase("Orders").getCollection("ActiveOrders");
-        activeOrdersCollection.insertOne(orderInfo);
-
-        String text = "Ваш заказ \"" + orderInfo.get("type") + "\" с комментарием \"" + orderInfo.get("comment") + "\" успешно взят в работу!";
-        NotificationsService.createNotification((ObjectId) orderInfo.get("customerId"), 2, text);
     }
 }

@@ -65,6 +65,19 @@ public class NotificationController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(Map.of("message", "Уведомление прочитано"));
     }
+    @PatchMapping("/{userType}/unreadNotification/{notificationId}")
+    public ResponseEntity<?> unreadNotification(
+            @PathVariable String userType,
+            @PathVariable ObjectId notificationId,
+            @RequestHeader("Username") String username,
+            @RequestHeader("Session-Token") String sessionToken
+    ) {
+        SessionDTO user = new SessionDTO(username, sessionToken);
+        TokensService.checkUserToken(user, userType);
+        NotificationsService.unreadNotification(notificationId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(Map.of("message", "Уведомление отмечено непрочитанным"));
+    }
 
     @PatchMapping("/{userType}/readAllNotifications")
     public ResponseEntity<?> readAllNotifications(

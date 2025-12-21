@@ -1,14 +1,13 @@
 package com.example.AutoServiceApp.DTO;
 
-import org.bson.types.ObjectId;
-
 public record OrderDTO(
-        ObjectId id,
-        ObjectId customerId,
+        String id,
+        String customerId,
         int typeId,
         String type,
         String comment,
-        ObjectId workerId,
+        String workerId,
+        String status,
         boolean hasCustomerFeedback,
         boolean hasWorkerFeedback
 ) {
