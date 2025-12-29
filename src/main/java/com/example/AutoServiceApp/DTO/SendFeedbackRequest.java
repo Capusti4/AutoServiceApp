@@ -1,12 +1,14 @@
 package com.example.AutoServiceApp.DTO;
 
+import java.util.UUID;
+
 public record SendFeedbackRequest(
         String username,
         String sessionToken,
-        String authorId,
-        String targetId,
-        String orderId,
+        UUID authorId,
+        UUID targetId,
+        UUID orderId,
         int rating,
-        String comment
+        String feedback
 ) implements WithUserDataDTO {
 }

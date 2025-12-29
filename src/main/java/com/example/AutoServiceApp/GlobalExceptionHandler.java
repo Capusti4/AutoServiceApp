@@ -1,6 +1,6 @@
 package com.example.AutoServiceApp;
 
-import com.example.AutoServiceApp.Exceptions.AppException;
+import com.example.AutoServiceApp.Exception.AppException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
