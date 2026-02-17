@@ -11,12 +11,12 @@ import com.example.AutoServiceApp.Repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FeedbacksService {
+public class FeedbackService {
     private final UserRepository userRepository;
     private final FeedbackRepository feedbackRepository;
     private final NotificationService notificationService;
 
-    public FeedbacksService(
+    public FeedbackService(
             UserRepository userRepository,
             FeedbackRepository feedbackRepository,
             NotificationService notificationService

@@ -5,6 +5,7 @@ import com.example.AutoServiceApp.Exception.IncorrectOrderId;
 import com.example.AutoServiceApp.Exception.IncorrectOrderTypeId;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -24,6 +25,9 @@ public class OrderEntity {
 
     @Column(nullable = false)
     private String type;
+
+    @Column(nullable = false)
+    private BigDecimal price;
 
     @Column(name = "type_id", nullable = false)
     private int typeId;
@@ -52,6 +56,7 @@ public class OrderEntity {
         }
         this.customer = customer;
         this.comment = request.comment();
+        status = "new";
     }
 
     void SwitchTypeId() {
