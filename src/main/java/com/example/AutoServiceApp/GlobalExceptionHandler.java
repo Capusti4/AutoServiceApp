@@ -1,9 +1,9 @@
 package com.example.AutoServiceApp;
 
 import com.example.AutoServiceApp.Exception.AppException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -22,7 +22,16 @@ public class GlobalExceptionHandler {
                 .body(Map.of("error", e.getMessage()));
     }
 
-    @ExceptionHandler({Exception.class, JsonProcessingException.class})
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<Map<String, String>> handleHttpRequestMethodNotSupportedException(
+            HttpRequestMethodNotSupportedException e
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body(Map.of("error", "Метод " + e.getMethod() + " не разрешен"));
+    }
+
+    @ExceptionHandler({Exception.class})
     public ResponseEntity<Map<String, String>> handleUnknownException(Exception e) {
         logger.log(Level.SEVERE, e.getMessage(), e);
         return ResponseEntity

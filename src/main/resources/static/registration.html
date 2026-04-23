@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Регистрация</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Регистрация</h1>
+
+<form id="registerForm">
+  <label for="username"></label><input type="text" id="username" name="username" placeholder="Юзернейм" required>
+  <label for="password"></label><input type="password" id="password" name="password" placeholder="Пароль" required>
+  <label for="confirm_password"></label><input type="password" id="confirm_password" name="confirm_password"
+                                               placeholder="Подтверждение пароля" required>
+  <label for="first_name"></label><input type="text" id="first_name" name="first_name" placeholder="Имя" required>
+  <label for="last_name"></label><input type="text" id="last_name" name="last_name" placeholder="Фамилия" required>
+  <label for="phone"></label><input type="tel" id="phone" name="phone" placeholder="Номер телефона" required>
+  <label for="isWorker">Работник</label><input type="checkbox" id="isWorker">
+  <button type="submit">Зарегистрироваться</button>
+  <button class="switch-page" onclick="window.location.href='login.html'">Вход</button>
+</form>
+
+</body>
+<script src="registration.js"></script>
+</html>

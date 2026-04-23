@@ -5,6 +5,7 @@ public record RegistrationRequest(
         String password,
         String firstName,
         String lastName,
-        String phoneNumber
+        String phoneNumber,
+        boolean isWorker
 ) {
 }

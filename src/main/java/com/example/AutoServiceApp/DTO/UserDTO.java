@@ -4,6 +4,7 @@ public record UserDTO(
         String username,
         String firstname,
         String lastname,
-        String phoneNumber
+        String phoneNumber,
+        boolean isWorker
 ) {
 }

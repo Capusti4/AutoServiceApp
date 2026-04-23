@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Создание заказ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<form id="orderForm">
+    <label for="order-type">Тип заказа</label>
+    <select id="order-type" name="type">
+        <option value="1">Диагностика</option>
+        <option value="2">Замена масла</option>
+        <option value="3">Шиномонтаж</option>
+        <option value="4">Ремонт тормозов</option>
+        <option value="5">Ремонт двигателя</option>
+        <option value="6">Ремонт подвески</option>
+        <option value="7">Замена аккумулятора</option>
+        <option value="8">Развал-схождение</option>
+        <option value="9">Ремонт электрики</option>
+        <option value="10">Другое</option>
+    </select>
+    <br>
+    <label for="comment">Комментарий</label>
+    <textarea id="comment" name="comment" placeholder="Введите комментарий..."></textarea>
+    <br>
+    <label for="budget">Бюджет</label>
+    <input id="budget" name="budget" type="number" placeholder="Оставьте пустым, если неограничен">
+    <br>
+    <button type="submit">Создать заказ</button>
+    <button type="reset" onclick="window.location.href='index.html'">Назад</button>
+</form>
+</body>
+<script src="js/make_order_script.js"></script>
+</html>

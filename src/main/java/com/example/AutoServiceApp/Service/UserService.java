@@ -1,10 +1,11 @@
 package com.example.AutoServiceApp.Service;
 
-import com.example.AutoServiceApp.DTO.WithUserDataDTO;
+import com.example.AutoServiceApp.DTO.UserDTO;
 import com.example.AutoServiceApp.Entity.UserEntity;
-import com.example.AutoServiceApp.Exception.IncorrectSessionToken;
+import com.example.AutoServiceApp.Exception.IncorrectSession;
 import com.example.AutoServiceApp.Exception.IncorrectUserType;
 import com.example.AutoServiceApp.Repository.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,24 +16,41 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public UserEntity getUser(WithUserDataDTO request) {
-        String username = request.username();
-        String sessionToken = request.sessionToken();
-        UserEntity user = userRepository.findByUsername(username);
+    public UserEntity getUser(HttpSession session) {
+        UserDTO user = (UserDTO) session.getAttribute("user");
         if (user == null) {
-            throw new IncorrectSessionToken();
+            throw new IncorrectSession();
         }
-        if (user.checkSessionToken(sessionToken)) {
-            return user;
-        }
-        throw new IncorrectSessionToken();
+        return getEntity(user);
     }
 
-    public UserEntity getClient(WithUserDataDTO request) {
-        UserEntity user = getUser(request);
+    public UserEntity getWorker(HttpSession session) {
+        UserDTO user = (UserDTO) session.getAttribute("user");
+        if (user == null) {
+            throw new IncorrectSession();
+        }
+        if (!user.isWorker()) {
+            throw new IncorrectUserType();
+        }
+        return getEntity(user);
+    }
+
+    public UserEntity getClient(HttpSession session) {
+        UserDTO user = (UserDTO) session.getAttribute("user");
+        if (user == null) {
+            throw new IncorrectSession();
+        }
         if (user.isWorker()) {
             throw new IncorrectUserType();
         }
-        return user;
+        return getEntity(user);
+    }
+
+    private UserEntity getEntity(UserDTO user) {
+        UserEntity userEntity = userRepository.findByUsername(user.username());
+        if (userEntity == null) {
+            throw new IncorrectSession();
+        }
+        return userEntity;
     }
 }

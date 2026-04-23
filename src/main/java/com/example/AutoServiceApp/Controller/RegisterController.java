@@ -1,16 +1,14 @@
 package com.example.AutoServiceApp.Controller;
 
-import com.example.AutoServiceApp.DTO.RegisterResponse;
+import com.example.AutoServiceApp.DTO.LoginOrRegisterResponse;
 import com.example.AutoServiceApp.DTO.RegistrationRequest;
+import com.example.AutoServiceApp.DTO.UserDTO;
 import com.example.AutoServiceApp.Entity.UserEntity;
 import com.example.AutoServiceApp.Service.RegistrationService;
-import com.example.AutoServiceApp.Service.ServiceFunctions;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class RegisterController {
@@ -21,13 +19,12 @@ public class RegisterController {
         this.registrationService = registrationService;
     }
 
-    @PostMapping("/{userType}/register")
+    @PostMapping("/register")
     public ResponseEntity<?> registerUser(
-            @PathVariable String userType,
-            @RequestBody RegistrationRequest request
+            @RequestBody RegistrationRequest request,
+            HttpSession session
     ) {
-        ServiceFunctions.checkUserType(userType);
-        boolean isWorker = userType.equalsIgnoreCase("worker");
+        boolean isWorker = request.isWorker();
         UserEntity user = new UserEntity(
                 request.username(),
                 request.password(),
@@ -36,7 +33,10 @@ public class RegisterController {
                 request.phoneNumber(),
                 isWorker
         );
-        RegisterResponse response = registrationService.register(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        UserDTO userDTO = registrationService.register(user);
+        session.setAttribute("user", userDTO);
+        session.setAttribute("isWorker", user.isWorker());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new LoginOrRegisterResponse("Успешная регистрация"));
     }
 }

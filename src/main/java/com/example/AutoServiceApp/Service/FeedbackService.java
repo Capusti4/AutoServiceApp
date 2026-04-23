@@ -5,7 +5,7 @@ import com.example.AutoServiceApp.DTO.SendFeedbackRequest;
 import com.example.AutoServiceApp.Entity.FeedbackEntity;
 import com.example.AutoServiceApp.Entity.UserEntity;
 import com.example.AutoServiceApp.Exception.IncorrectOrderId;
-import com.example.AutoServiceApp.Exception.IncorrectSessionToken;
+import com.example.AutoServiceApp.Exception.IncorrectSession;
 import com.example.AutoServiceApp.Repository.FeedbackRepository;
 import com.example.AutoServiceApp.Repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -29,12 +29,12 @@ public class FeedbackService {
     public void createFeedback(SendFeedbackRequest request) throws IncorrectOrderId {
         UserEntity user = userRepository.findByUsername(request.username());
         UserEntity author = userRepository.findById(request.authorId())
-                .orElseThrow(IncorrectSessionToken::new);
-        if (user == null || !author.checkSessionToken(request.sessionToken()) || !author.getId().equals(user.getId())) {
-            throw new IncorrectSessionToken();
+                .orElseThrow(IncorrectSession::new);
+        if (user == null || !author.getId().equals(user.getId())) {
+            throw new IncorrectSession();
         }
         UserEntity target = userRepository.findById(request.targetId())
-                .orElseThrow(IncorrectSessionToken::new);
+                .orElseThrow(IncorrectSession::new);
         FeedbackEntity feedback = new FeedbackEntity(
                 request.rating(),
                 request.feedback(),

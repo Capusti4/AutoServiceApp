@@ -4,6 +4,7 @@ import com.example.AutoServiceApp.DTO.*;
 import com.example.AutoServiceApp.Entity.UserEntity;
 import com.example.AutoServiceApp.Exception.IncorrectFeedbackType;
 import com.example.AutoServiceApp.Service.*;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,15 +22,11 @@ public class FeedbackController {
         this.feedbackService = feedbackService;
     }
 
-    @GetMapping("/{userType}/getFeedbacks{feedbacksType}")
+    @GetMapping("/getFeedbacks{feedbacksType}")
     public ResponseEntity<?> getFeedbacksByUser(
-            @RequestHeader("Username") String username,
-            @RequestHeader("Session-Token") String sessionToken,
-            @PathVariable String userType,
-            @PathVariable String feedbacksType
+            @PathVariable String feedbacksType,
+            HttpSession session
     ) {
-        ServiceFunctions.checkUserType(userType);
-        WithUserDataDTO session = new SessionDTO(username, sessionToken);
         UserEntity user = userService.getUser(session);
         FeedbackResponse response;
         if (feedbacksType.equals("ByUser")) {
@@ -42,9 +39,8 @@ public class FeedbackController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PostMapping("/{userType}/sendFeedback")
-    public ResponseEntity<?> sendFeedback(@PathVariable String userType, @RequestBody SendFeedbackRequest request) {
-        ServiceFunctions.checkUserType(userType);
+    @PostMapping("/sendFeedback")
+    public ResponseEntity<?> sendFeedback(@RequestBody SendFeedbackRequest request) {
         feedbackService.createFeedback(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Спасибо за Ваш отзыв!"));
     }

@@ -2,12 +2,12 @@ package com.example.AutoServiceApp.Controller;
 
 import com.example.AutoServiceApp.DTO.GetOrdersResponse;
 import com.example.AutoServiceApp.DTO.MakeOrderRequest;
-import com.example.AutoServiceApp.DTO.SessionDTO;
-import com.example.AutoServiceApp.Entity.OrderEntity;
+import com.example.AutoServiceApp.DTO.OrderDTO;
+import com.example.AutoServiceApp.DTO.StartOrderRequest;
 import com.example.AutoServiceApp.Entity.UserEntity;
-import com.example.AutoServiceApp.Exception.IncorrectUserType;
 import com.example.AutoServiceApp.Repository.OrderRepository;
 import com.example.AutoServiceApp.Service.*;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,72 +29,55 @@ public class OrderController {
         this.orderRepository = orderRepository;
     }
 
-    @PatchMapping("/worker/startOrder/{orderId}")
+    @PatchMapping("/startOrder/{orderId}")
     public ResponseEntity<?> startOrder(
             @PathVariable UUID orderId,
-            @RequestHeader("Username") String username,
-            @RequestHeader("Session-Token") String sessionToken
+            @RequestBody StartOrderRequest request,
+            HttpSession session
     ) {
-        SessionDTO user = new SessionDTO(username, sessionToken);
-        UserEntity worker = userService.getUser(user);
-        orderService.startOrder(orderId, worker);
+        UserEntity worker = userService.getWorker(session);
+        orderService.startOrder(orderId, worker, request.price());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(Map.of("message", "Заказ успешно взят в работу"));
     }
 
-    @PatchMapping("/worker/completeOrder/{orderId}")
+    @PatchMapping("/completeOrder/{orderId}")
     public ResponseEntity<?> completeOrder(
             @PathVariable UUID orderId,
-            @RequestHeader("Username") String username,
-            @RequestHeader("Session-Token") String sessionToken
+            @RequestBody StartOrderRequest request,
+            HttpSession session
     ) {
-        SessionDTO user = new SessionDTO(username, sessionToken);
-        UserEntity worker = userService.getUser(user);
-        orderService.completeOrder(orderId, worker);
+        UserEntity worker = userService.getWorker(session);
+        orderService.completeOrder(orderId, worker, request.price());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(Map.of("message", "Заказ успешно завершен"));
-
     }
 
-    @PostMapping("/client/makeOrder")
+    @PostMapping("/makeOrder")
     public ResponseEntity<?> makeOrder(
-            @RequestBody MakeOrderRequest request
+            @RequestBody MakeOrderRequest request,
+            HttpSession session
     ) {
-        UserEntity client = userService.getClient(request);
-        OrderEntity order = new OrderEntity(request, client);
-        orderService.createOrder(order);
+        UserEntity client = userService.getClient(session);
+        orderService.createOrder(request, client);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of("message", "Заказ успешно создан"));
     }
 
-    @GetMapping("/client/getOrders")
-    public ResponseEntity<?> getClientOrders(
-            @RequestHeader("Username") String username,
-            @RequestHeader("Session-Token") String sessionToken
+    @GetMapping("/getOrders")
+    public ResponseEntity<?> getOrders(
+            HttpSession session
     ) {
-        SessionDTO session = new SessionDTO(username, sessionToken);
         UserEntity user = userService.getUser(session);
+        GetOrdersResponse response;
         if (user.isWorker()) {
-            throw new IncorrectUserType();
+            List<OrderDTO> workerOrders = new ArrayList<>();
+            workerOrders.addAll(orderRepository.findAllByWorker(user));
+            workerOrders.addAll(orderRepository.findAllByStatus("new"));
+            response = new GetOrdersResponse(workerOrders);
+        } else {
+            response = new GetOrdersResponse(user.getOrders());
         }
-        GetOrdersResponse response = new GetOrdersResponse(user.getOrders());
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    @GetMapping("/worker/getOrders")
-    public ResponseEntity<?> getWorkerOrders(
-            @RequestHeader("Username") String username,
-            @RequestHeader("Session-Token") String sessionToken
-    ) {
-        SessionDTO session = new SessionDTO(username, sessionToken);
-        UserEntity user = userService.getUser(session);
-        if (!user.isWorker()) {
-            throw new IncorrectUserType();
-        }
-        List<OrderEntity> workerOrders = new ArrayList<>();
-        workerOrders.addAll(user.getOrders());
-        workerOrders.addAll(orderRepository.findAllByStatus("new"));
-        GetOrdersResponse response = new GetOrdersResponse(workerOrders);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

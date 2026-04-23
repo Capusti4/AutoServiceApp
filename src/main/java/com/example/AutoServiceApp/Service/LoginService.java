@@ -1,8 +1,6 @@
 package com.example.AutoServiceApp.Service;
 
 import com.example.AutoServiceApp.DTO.LoginRequest;
-import com.example.AutoServiceApp.DTO.LoginResponse;
-import com.example.AutoServiceApp.DTO.SessionDTO;
 import com.example.AutoServiceApp.DTO.UserDTO;
 import com.example.AutoServiceApp.Entity.UserEntity;
 import com.example.AutoServiceApp.Exception.IncorrectUsernameOrPassword;
@@ -18,31 +16,22 @@ public class LoginService {
         this.userRepository = userRepository;
     }
 
-    public LoginResponse login(LoginRequest request, String userType) {
+    public UserDTO login(LoginRequest request) {
         String username = request.username();
         String password = request.password();
 
         UserEntity user = userRepository.findByUsername(username);
-        if (user == null || !user.checkPassword(password) || ((user.isWorker() && userType.equals("client")) || (!user.isWorker() && userType.equals("worker")))) {
+        if (user == null || !user.checkPassword(password)) {
             throw new IncorrectUsernameOrPassword();
         }
-        String sessionToken = user.generateSessionToken();
         userRepository.save(user);
-        UserDTO userDTO = new UserDTO(
+
+        return new UserDTO(
                 user.getUsername(),
                 user.getFirstName(),
                 user.getLastName(),
-                user.getPhoneNumber()
-        );
-        SessionDTO sessionDTO = new SessionDTO(
-                user.getUsername(),
-                sessionToken
-        );
-
-        return new LoginResponse(
-                "Успешный вход",
-                userDTO,
-                sessionDTO
+                user.getPhoneNumber(),
+                user.isWorker()
         );
     }
 }

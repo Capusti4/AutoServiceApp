@@ -10,5 +10,5 @@ public record SendFeedbackRequest(
         UUID orderId,
         int rating,
         String feedback
-) implements WithUserDataDTO {
+) {
 }
