@@ -1,43 +1,153 @@
+/* Общие настройки страницы */
 body {
-    font-family: Arial, sans-serif;
-    max-width: 400px;
-    margin: 50px auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f7ff; /* Очень светло-голубой фон */
+    color: #33475b;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
 }
 
-input {
-    display: block;
+h1 {
+    color: #5d9cec; /* Приглушенный голубой */
+    font-weight: 300;
+    margin-bottom: 20px;
+}
+
+/* Стилизация форм */
+form {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(164, 198, 226, 0.3); /* Мягкая голубоватая тень */
     width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
+input, select, textarea {
+    padding: 12px;
+    border: 1px solid #d1e3f8;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #5d9cec;
+    background-color: #f9fcff;
+}
+
+/* Кнопки */
 button {
-    padding: 10px 15px;
-    margin-top: 10px;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-top: 5px;
+}
+
+/* Основная кнопка (синяя) */
+button[type="submit"], #make-order, #get-orders {
+    background-color: #a0c4ff; /* Пастельно-голубой */
+    color: white;
+}
+
+button[type="submit"]:hover, #make-order:hover, #get-orders:hover {
+    background-color: #89b4f5;
+    transform: translateY(-1px);
+}
+
+/* Второстепенная кнопка (светлая/назад) */
+button.switch-page, button[type="reset"], button:not([type="submit"]) {
+    background-color: #e1ecf7;
+    color: #5d9cec;
+}
+
+button.switch-page:hover, button[type="reset"]:hover, button:not([type="submit"]):hover {
+    background-color: #d1e3f8;
+}
+
+/* Карточки заказов */
+#orders {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+    margin-bottom: 20px;
 }
 
 .order-card {
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 12px;
-    margin-bottom: 10px;
-    width: 300px;
-    background: #f9f9f9;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 5px solid #a0c4ff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
+.order-card p {
+    margin: 8px 0;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.order-card b {
+    color: #5d9cec;
+}
+
+/* Модальные окна */
 .modal {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
 }
 
 .modal-content {
     background: white;
-    padding: 20px;
-    margin: 100px auto;
     width: 300px;
+    padding: 30px;
+    border-radius: 20px;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Чекбокс "Работник" */
+label[for="isWorker"] {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 480px) {
+    form {
+        padding: 20px;
+    }
 }
