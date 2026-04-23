@@ -15,6 +15,11 @@ async function register() {
     let phone = document.getElementById("phone").value;
     let isWorker = document.getElementById("isWorker").checked;
 
+    if (password !== confirmPassword) {
+        alert("Пароли не совпадают");
+        return;
+    }
+
     const response = fetch('http://localhost:8080/register', {
         method: 'POST',
         credentials: 'include',
