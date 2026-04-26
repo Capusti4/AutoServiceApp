@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 
 @RestController
 public class LoginController {
@@ -38,5 +40,12 @@ public class LoginController {
             HttpSession session
     ) {
         return sessionService.getUser(session);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(Map.of("message", "Вы успешно вышли из системы"));
     }
 }

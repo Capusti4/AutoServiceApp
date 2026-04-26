@@ -18,4 +18,24 @@ async function tryLoginByCookies() {
     }
 }
 
+async function logout() {
+    if (confirm('Вы уверены, что хотите выйти?')) {
+        fetch('/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('Вы успешно вышли');
+                    window.location.href = '/login.html';
+                } else {
+                    alert('Ошибка при выходе из системы');
+                }
+            })
+            .catch(error => console.error('Ошибка:', error));
+    }
+}
+
 tryLoginByCookies().then()
