@@ -4,6 +4,7 @@ import com.example.AutoServiceApp.DTO.MakeOrderRequest;
 import com.example.AutoServiceApp.DTO.OrderDTO;
 import com.example.AutoServiceApp.Exception.IncorrectOrderId;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -15,6 +16,7 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private UserEntity customer;

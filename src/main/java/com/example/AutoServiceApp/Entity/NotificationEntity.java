@@ -1,16 +1,17 @@
 package com.example.AutoServiceApp.Entity;
 
 import jakarta.persistence.*;
-
-import java.util.UUID;
+import lombok.Getter;
 
 @Entity
 @Table(name = "notifications")
 public class NotificationEntity {
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private long id;
 
+    @Getter
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
@@ -19,7 +20,7 @@ public class NotificationEntity {
     private boolean isRead;
 
     @Column(name = "type_id", nullable = false)
-    private int typeId;
+    private long typeId;
 
     @Column(nullable = false)
     private String message;
@@ -27,7 +28,7 @@ public class NotificationEntity {
     protected NotificationEntity() {
     }
 
-    public NotificationEntity(UserEntity user, int typeId, String message) {
+    public NotificationEntity(UserEntity user, long typeId, String message) {
         this.user = user;
         this.isRead = false;
         this.typeId = typeId;
@@ -40,13 +41,5 @@ public class NotificationEntity {
 
     public void unread() {
         isRead = false;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public UserEntity getUser() {
-        return user;
     }
 }

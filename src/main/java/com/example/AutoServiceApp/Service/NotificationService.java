@@ -9,7 +9,6 @@ import com.example.AutoServiceApp.Repository.NotificationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class NotificationService {
@@ -19,10 +18,10 @@ public class NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
-    public void deleteNotification(UserEntity user, UUID notificationId) {
+    public void deleteNotification(UserEntity user, long notificationId) {
         List<NotificationEntity> notifications = user.getNotifications();
         for (NotificationEntity notification : notifications) {
-            if (notification.getId().equals(notificationId)) {
+            if (notification.getId() == notificationId) {
                 notificationRepository.delete(notification);
                 return;
             }
@@ -30,10 +29,10 @@ public class NotificationService {
         throw new IncorrectNotificationId();
     }
 
-    public void readNotification(UserEntity user, UUID notificationId) {
+    public void readNotification(UserEntity user, long notificationId) {
         List<NotificationEntity> notifications = user.getNotifications();
         for (NotificationEntity notification : notifications) {
-            if (notification.getId().equals(notificationId)) {
+            if (notification.getId() == notificationId) {
                 notification.read();
                 return;
             }
@@ -41,10 +40,10 @@ public class NotificationService {
         throw new IncorrectNotificationId();
     }
 
-    public void unreadNotification(UserEntity user, UUID notificationId) {
+    public void unreadNotification(UserEntity user, long notificationId) {
         List<NotificationEntity> notifications = user.getNotifications();
         for (NotificationEntity notification : notifications) {
-            if (notification.getId().equals(notificationId)) {
+            if (notification.getId() == notificationId) {
                 notification.unread();
                 return;
             }
@@ -64,10 +63,9 @@ public class NotificationService {
         return notifications.size();
     }
 
-    public void createNotification(UserEntity user, int typeId, String message) {
-        if (typeId < 1 || typeId > 5) {
-            throw new IncorrectNotificationType();
-        }
+    public void createNotification(UserEntity user, long typeId, String message) {
+        if (!notificationRepository.existsById(typeId)) throw new IncorrectNotificationType();
+
         NotificationEntity notification = new NotificationEntity(
                 user,
                 typeId,

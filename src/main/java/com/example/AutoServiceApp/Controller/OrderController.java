@@ -1,10 +1,10 @@
 package com.example.AutoServiceApp.Controller;
 
-import com.example.AutoServiceApp.DTO.GetOrdersResponse;
-import com.example.AutoServiceApp.DTO.MakeOrderRequest;
-import com.example.AutoServiceApp.DTO.OrderDTO;
-import com.example.AutoServiceApp.DTO.StartOrderRequest;
+import com.example.AutoServiceApp.DTO.*;
+import com.example.AutoServiceApp.Entity.OrderEntity;
 import com.example.AutoServiceApp.Entity.UserEntity;
+import com.example.AutoServiceApp.Exception.AppException;
+import com.example.AutoServiceApp.Exception.IncorrectNotificationType;
 import com.example.AutoServiceApp.Repository.OrderRepository;
 import com.example.AutoServiceApp.Service.*;
 import jakarta.servlet.http.HttpSession;
@@ -21,11 +21,13 @@ import java.util.UUID;
 public class OrderController {
     private final OrderService orderService;
     private final UserService userService;
+    private final NotificationService notificationService;
     private final OrderRepository orderRepository;
 
-    public OrderController(OrderService orderService, UserService userService, OrderRepository orderRepository) {
+    public OrderController(OrderService orderService, UserService userService, OrderRepository orderRepository, NotificationService notificationService) {
         this.orderService = orderService;
         this.userService = userService;
+        this.notificationService = notificationService;
         this.orderRepository = orderRepository;
     }
 
@@ -37,6 +39,7 @@ public class OrderController {
     ) {
         UserEntity worker = userService.getWorker(session);
         orderService.startOrder(orderId, worker, request.price());
+        sendNotificationByOrder(orderId, 1);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(Map.of("message", "Заказ успешно взят в работу"));
     }
@@ -49,8 +52,25 @@ public class OrderController {
     ) {
         UserEntity worker = userService.getWorker(session);
         orderService.completeOrder(orderId, worker, request.price());
+        sendNotificationByOrder(orderId, 2);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(Map.of("message", "Заказ успешно завершен"));
+    }
+
+    private void sendNotificationByOrder(UUID orderId, int notificationType) {
+        UserEntity user = orderRepository.findById(orderId)
+                .map(OrderEntity::getCustomer)
+                .orElseThrow(() -> new AppException("Некорректный заказ", 400));
+        switch (notificationType) {
+            case 1:
+                notificationService.createNotification(user, notificationType, "Ваш заказ №" + orderId + "взят в работу!");
+                break;
+            case 2:
+                notificationService.createNotification(user, notificationType, "Ваш заказ №" + orderId + "завершен!");
+                break;
+            default:
+                throw new IncorrectNotificationType();
+        }
     }
 
     @PostMapping("/makeOrder")
