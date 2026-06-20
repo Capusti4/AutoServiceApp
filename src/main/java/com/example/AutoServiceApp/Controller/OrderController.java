@@ -2,20 +2,23 @@ package com.example.AutoServiceApp.Controller;
 
 import com.example.AutoServiceApp.DTO.*;
 import com.example.AutoServiceApp.Entity.OrderEntity;
+import com.example.AutoServiceApp.Entity.OrderTypeEntity;
 import com.example.AutoServiceApp.Entity.UserEntity;
-import com.example.AutoServiceApp.Exception.AppException;
 import com.example.AutoServiceApp.Exception.IncorrectNotificationType;
+import com.example.AutoServiceApp.Exception.IncorrectOrderId;
 import com.example.AutoServiceApp.Repository.OrderRepository;
+import com.example.AutoServiceApp.Repository.OrderTypeRepository;
 import com.example.AutoServiceApp.Service.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+
 
 @RestController
 public class OrderController {
@@ -23,50 +26,54 @@ public class OrderController {
     private final UserService userService;
     private final NotificationService notificationService;
     private final OrderRepository orderRepository;
+    private final OrderTypeRepository orderTypeRepository;
 
-    public OrderController(OrderService orderService, UserService userService, OrderRepository orderRepository, NotificationService notificationService) {
+    public OrderController(OrderService orderService, UserService userService, OrderRepository orderRepository, NotificationService notificationService, OrderTypeRepository orderTypeRepository) {
         this.orderService = orderService;
         this.userService = userService;
         this.notificationService = notificationService;
         this.orderRepository = orderRepository;
+        this.orderTypeRepository = orderTypeRepository;
     }
 
     @PatchMapping("/startOrder/{orderId}")
     public ResponseEntity<?> startOrder(
-            @PathVariable UUID orderId,
+            @PathVariable long orderId,
             @RequestBody StartOrderRequest request,
             HttpSession session
     ) {
         UserEntity worker = userService.getWorker(session);
         orderService.startOrder(orderId, worker, request.price());
-        sendNotificationByOrder(orderId, 1);
+        sendNotificationByOrder(orderId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(Map.of("message", "Заказ успешно взят в работу"));
     }
 
     @PatchMapping("/completeOrder/{orderId}")
     public ResponseEntity<?> completeOrder(
-            @PathVariable UUID orderId,
+            @PathVariable long orderId,
             @RequestBody StartOrderRequest request,
             HttpSession session
     ) {
         UserEntity worker = userService.getWorker(session);
         orderService.completeOrder(orderId, worker, request.price());
-        sendNotificationByOrder(orderId, 2);
+        sendNotificationByOrder(orderId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(Map.of("message", "Заказ успешно завершен"));
     }
 
-    private void sendNotificationByOrder(UUID orderId, int notificationType) {
-        UserEntity user = orderRepository.findById(orderId)
-                .map(OrderEntity::getCustomer)
-                .orElseThrow(() -> new AppException("Некорректный заказ", 400));
-        switch (notificationType) {
-            case 1:
-                notificationService.createNotification(user, notificationType, "Ваш заказ №" + orderId + "взят в работу!");
+    private void sendNotificationByOrder(long orderId) {
+        OrderEntity order = orderRepository.findById(orderId).orElseThrow(IncorrectOrderId::new);
+        UserEntity user = order.getCustomer();
+        String price = new DecimalFormat("0.##").format(order.getPrice());
+        switch (order.getStatus()) {
+            case "active":
+                notificationService.createNotification(user,
+                        "Ваш заказ №" + orderId + " взят в работу! Предварительная цена за заказ: " + price + " руб.");
                 break;
-            case 2:
-                notificationService.createNotification(user, notificationType, "Ваш заказ №" + orderId + "завершен!");
+            case "completed":
+                notificationService.createNotification(user,
+                        "Ваш заказ №" + orderId + " завершен! Цена за заказ: " + price + " руб.");
                 break;
             default:
                 throw new IncorrectNotificationType();
@@ -99,5 +106,14 @@ public class OrderController {
             response = new GetOrdersResponse(user.getOrders());
         }
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/getOrderTypes")
+    public ResponseEntity<?> getOrderTypes(
+            HttpSession session
+    ) {
+        userService.getUser(session);
+        List<OrderTypeEntity> types = orderTypeRepository.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(types);
     }
 }

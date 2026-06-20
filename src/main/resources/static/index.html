@@ -6,13 +6,25 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1 id="username"></h1>
-<h1 id="first-name"></h1>
-<h1 id="last-name"></h1>
-<h1 id="phone"></h1>
-<button id="make-order" onclick="window.location.href='make-order.html'">Сделать заказ</button>
-<button id="get-orders" onclick="window.location.href='orders.html'">Посмотреть заказы</button>
-<button id="logout" onclick="logout()">Выйти</button>
-</body>
+<div class="container">
+    <h1>Личный кабинет</h1>
+    <div class="user-info">
+        <h1 id="username"></h1>
+        <h1 id="first-name"></h1>
+        <h1 id="last-name"></h1>
+        <h1 id="phone"></h1>
+    </div>
+    <div class="action-buttons">
+        <button id="make-order" onclick="window.location.href='make-order.html'">Сделать заказ</button>
+        <button id="get-orders" onclick="window.location.href='orders.html'">Посмотреть заказы</button>
+
+        <button id="notifications-btn" class="btn-secondary" onclick="window.location.href='notifications.html'">
+            Уведомления <span id="notif-count" class="badge">0</span>
+        </button>
+
+        <button id="logout" onclick="logout()">Выйти</button>
+    </div>
+</div>
 <script src="js/main.js"></script>
+</body>
 </html>

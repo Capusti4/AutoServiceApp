@@ -3,14 +3,14 @@ package com.example.AutoServiceApp.Entity;
 import com.example.AutoServiceApp.Exception.IncorrectFeedbackRating;
 import jakarta.persistence.*;
 
-import java.util.UUID;
+
 
 @Entity
 @Table(name = "feedbacks")
 public class FeedbackEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private long id;
 
     @Column(nullable = false)
     private int rating;

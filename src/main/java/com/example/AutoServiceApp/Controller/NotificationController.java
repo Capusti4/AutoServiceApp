@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.UUID;
+
 
 @RestController
 public class NotificationController {
@@ -23,7 +23,7 @@ public class NotificationController {
 
     @DeleteMapping("/deleteNotification/{notificationId}")
     public ResponseEntity<?> deleteNotification(
-            @PathVariable UUID notificationId,
+            @PathVariable long notificationId,
             HttpSession session
     ) {
         UserEntity user = userService.getUser(session);
@@ -42,19 +42,19 @@ public class NotificationController {
                 .body(response);
     }
 
-    @GetMapping("/getNotificationsAmount")
-    public ResponseEntity<?> getNotificationsAmount(
+    @GetMapping("/getUnreadNotificationsAmount")
+    public ResponseEntity<?> getUnreadNotificationsAmount(
             HttpSession session
     ) {
         UserEntity user = userService.getUser(session);
-        int amount = notificationService.getNotificationsAmount(user);
+        int amount = notificationService.getUnreadNotificationsAmount(user);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(Map.of("amount", amount));
     }
 
     @PatchMapping("/readNotification/{notificationId}")
     public ResponseEntity<?> readNotification(
-            @PathVariable UUID notificationId,
+            @PathVariable long notificationId,
             HttpSession session
     ) {
         UserEntity user = userService.getUser(session);
@@ -65,7 +65,7 @@ public class NotificationController {
 
     @PatchMapping("/unreadNotification/{notificationId}")
     public ResponseEntity<?> unreadNotification(
-            @PathVariable UUID notificationId,
+            @PathVariable long notificationId,
             HttpSession session
     ) {
         UserEntity user = userService.getUser(session);

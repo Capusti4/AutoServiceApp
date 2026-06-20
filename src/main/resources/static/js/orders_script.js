@@ -35,9 +35,17 @@ async function getOrders() {
                 status = "Завершен";
                 break;
         }
+
+        let worker;
+        if (order.worker) {
+            worker = `${order.worker.lastName} ${order.worker.firstName}`;
+        } else {
+            worker = "не назначен"
+        }
+
         div.innerHTML = `
             <p><b>ID:</b> ${order.id}</p>
-            <p><b>Работник:</b> ${order.workerId ?? "не назначен"}</p>
+            <p><b>Работник:</b> ${worker}</p>
             <p><b>Цена:</b> ${order.price ?? "Не назначена"}</p>
             <p><b>Бюджет:</b> ${order.budget ?? "Не ограничен"}</p>
             <p><b>Тип:</b> ${order.type}</p>

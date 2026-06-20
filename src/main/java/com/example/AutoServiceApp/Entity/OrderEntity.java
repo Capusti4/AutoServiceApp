@@ -7,14 +7,14 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.math.BigDecimal;
-import java.util.UUID;
+
 
 @Entity
 @Table(name = "orders")
 public class OrderEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private long id;
 
     @Getter
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,6 +25,7 @@ public class OrderEntity {
     @JoinColumn(name = "worker_id")
     private UserEntity worker;
 
+    @Getter
     @Column()
     private BigDecimal price = null;
 
@@ -35,6 +36,7 @@ public class OrderEntity {
     @JoinColumn(name = "type_id", nullable = false)
     private OrderTypeEntity type;
 
+    @Getter
     @Column(nullable = false)
     private String status = "new";
 
@@ -77,7 +79,7 @@ public class OrderEntity {
     public OrderDTO getDTO() {
         return new OrderDTO(
                 id,
-                worker == null ? null : worker.getId(),
+                worker,
                 price,
                 budget,
                 type.getName(),

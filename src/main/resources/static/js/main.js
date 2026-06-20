@@ -5,16 +5,41 @@ async function tryLoginByCookies() {
     });
     const data = await response.json();
     if (response.ok) {
-        // document.getElementById("username").innerText = data.username;
-        // document.getElementById("first-name").innerText = data.firstname;
-        // document.getElementById("last-name").innerText = data.lastname;
-        // document.getElementById("phone").innerText = data.phoneNumber;
+        document.getElementById("username").innerText = data.username;
+        document.getElementById("first-name").innerText = data.firstname;
+        document.getElementById("last-name").innerText = data.lastname;
+        document.getElementById("phone").innerText = data.phoneNumber;
         if (data.isWorker) {
             document.getElementById("make-order").remove();
         }
+
+        await fetchNotificationsAmount();
     } else {
         alert(data.error);
         window.location.href = "login.html";
+    }
+}
+
+async function fetchNotificationsAmount() {
+    try {
+        const response = await fetch("http://localhost:8080/getUnreadNotificationsAmount", {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const badge = document.getElementById('notif-count');
+
+            if (data.amount > 0) {
+                badge.innerText = data.amount;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    } catch (error) {
+        console.error("Ошибка при получении количества уведомлений:", error);
     }
 }
 

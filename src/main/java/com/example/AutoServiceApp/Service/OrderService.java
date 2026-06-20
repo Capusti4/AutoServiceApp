@@ -11,7 +11,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
 
 
 @Service
@@ -31,14 +30,14 @@ public class OrderService {
     }
 
     @Transactional
-    public void startOrder(UUID orderId, UserEntity worker, BigDecimal price) {
+    public void startOrder(long orderId, UserEntity worker, BigDecimal price) {
         OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(IncorrectOrderId::new);
         order.start(worker, price);
     }
 
     @Transactional
-    public void completeOrder(UUID orderId, UserEntity worker, BigDecimal price) {
+    public void completeOrder(long orderId, UserEntity worker, BigDecimal price) {
         OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(IncorrectOrderId::new);
         order.complete(worker, price);

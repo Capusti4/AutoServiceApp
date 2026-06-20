@@ -10,7 +10,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+
 
 @Entity
 @Table(
@@ -24,7 +24,7 @@ public class UserEntity {
     @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private long id;
 
     @Getter
     @Column(name = "is_worker")
@@ -48,10 +48,6 @@ public class UserEntity {
     @Getter
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
-
-    @Getter
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<NotificationEntity> notifications;
 
     @Getter
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
@@ -91,7 +87,6 @@ public class UserEntity {
         this.username = username;
         this.password = password;
         orders = new ArrayList<>();
-        notifications = new ArrayList<>();
         feedbacksByUser = new ArrayList<>();
         feedbacksForUser = new ArrayList<>();
         this.isWorker = isWorker;

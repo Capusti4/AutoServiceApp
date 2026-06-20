@@ -20,7 +20,7 @@ async function register() {
         return;
     }
 
-    const response = fetch('http://localhost:8080/register', {
+    const response = await fetch('http://localhost:8080/register', {
         method: 'POST',
         credentials: 'include',
         headers: {

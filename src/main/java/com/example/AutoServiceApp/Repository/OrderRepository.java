@@ -7,15 +7,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Collection;
-import java.util.UUID;
+
 
 public interface OrderRepository
-        extends JpaRepository<OrderEntity, UUID> {
+        extends JpaRepository<OrderEntity, Long> {
 
     @Query("""
             SELECT new com.example.AutoServiceApp.DTO.OrderDTO(
                 o.id,
-                w.id,
+                w,
                 o.price,
                 o.budget,
                 o.type.name,
@@ -33,7 +33,7 @@ public interface OrderRepository
     @Query("""
             SELECT new com.example.AutoServiceApp.DTO.OrderDTO(
                 o.id,
-                o.worker.id,
+                o.worker,
                 o.price,
                 o.budget,
                 o.type.name,

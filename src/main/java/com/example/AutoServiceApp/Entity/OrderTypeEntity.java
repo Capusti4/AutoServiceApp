@@ -7,14 +7,12 @@ import lombok.Getter;
 @Table(name = "order_types")
 public class OrderTypeEntity {
     @Id
+    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String code;
-
     @Getter
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     protected OrderTypeEntity() {}

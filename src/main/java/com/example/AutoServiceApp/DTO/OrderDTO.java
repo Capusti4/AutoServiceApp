@@ -1,11 +1,13 @@
 package com.example.AutoServiceApp.DTO;
 
+import com.example.AutoServiceApp.Entity.UserEntity;
+
 import java.math.BigDecimal;
-import java.util.UUID;
+
 
 public record OrderDTO(
-        UUID id,
-        UUID workerId,
+        long id,
+        UserEntity worker,
         BigDecimal price,
         BigDecimal budget,
         String type,

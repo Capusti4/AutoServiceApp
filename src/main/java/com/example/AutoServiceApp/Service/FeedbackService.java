@@ -30,7 +30,7 @@ public class FeedbackService {
         UserEntity user = userRepository.findByUsername(request.username());
         UserEntity author = userRepository.findById(request.authorId())
                 .orElseThrow(IncorrectSession::new);
-        if (user == null || !author.getId().equals(user.getId())) {
+        if (user == null || author.getId() != user.getId()) {
             throw new IncorrectSession();
         }
         UserEntity target = userRepository.findById(request.targetId())
@@ -43,7 +43,7 @@ public class FeedbackService {
         );
         feedbackRepository.save(feedback);
         String text = createText(request.rating(), request.feedback());
-        notificationService.createNotification(target, 4, text);
+        notificationService.createNotification(target, text);
     }
 
     static String createText(int rating, String comment) {

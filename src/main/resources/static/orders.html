@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Мои заказы</title>
@@ -10,22 +10,27 @@
 <div class="modal" id="preliminary-price-input-modal" style="display:none;">
     <div class="modal-content">
         <p>Введите предварительную цену:</p>
-        <label for="preliminaryPriceInput"></label><input type="text" id="preliminaryPriceInput">
-        <button onclick="submitPreliminaryPrice()">OK</button>
+        <label for="preliminaryPriceInput"></label>
+        <input type="number" id="preliminaryPriceInput" placeholder="Сумма...">
+        <button onclick="submitPreliminaryPrice()">Подтвердить</button>
     </div>
 </div>
 
 <div class="modal" id="final-price-input-modal" style="display:none;">
     <div class="modal-content">
         <p>Введите финальную цену:</p>
-        <label for="finalPriceInput"></label><input type="text" id="finalPriceInput">
-        <button onclick="submitFinalPrice()">OK</button>
+        <label for="finalPriceInput"></label>
+        <input type="number" id="finalPriceInput" placeholder="Сумма...">
+        <button onclick="submitFinalPrice()">Завершить заказ</button>
     </div>
 </div>
 
+<div class="container container-large">
+    <h1>Заказы</h1>
+    <div id="orders"></div>
+    <button class="btn-secondary" style="max-width: 200px;" onclick="window.location.href='index.html'">Назад на главную</button>
+</div>
 
-<div id="orders"></div>
-<button onclick="window.location.href='index.html'">Назад</button>
-</body>
 <script src="js/orders_script.js"></script>
+</body>
 </html>

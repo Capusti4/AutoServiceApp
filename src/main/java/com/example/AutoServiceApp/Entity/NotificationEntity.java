@@ -11,27 +11,24 @@ public class NotificationEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Getter
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
+    @Getter
     @Column(name = "is_read", nullable = false)
     private boolean isRead;
 
-    @Column(name = "type_id", nullable = false)
-    private long typeId;
-
+    @Getter
     @Column(nullable = false)
     private String message;
 
     protected NotificationEntity() {
     }
 
-    public NotificationEntity(UserEntity user, long typeId, String message) {
+    public NotificationEntity(UserEntity user, String message) {
         this.user = user;
         this.isRead = false;
-        this.typeId = typeId;
         this.message = message;
     }
 
@@ -41,5 +38,9 @@ public class NotificationEntity {
 
     public void unread() {
         isRead = false;
+    }
+
+    public long getUserId() {
+        return user.getId();
     }
 }

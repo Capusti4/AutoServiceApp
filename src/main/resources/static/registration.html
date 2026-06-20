@@ -6,22 +6,25 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="container">
+  <h1>Регистрация</h1>
+  <form id="registerForm">
+    <label for="username"></label><input type="text" id="username" name="username" placeholder="Юзернейм" required>
+    <label for="password"></label><input type="password" id="password" name="password" placeholder="Пароль" required>
+    <label for="confirm_password"></label><input type="password" id="confirm_password" name="confirm_password" placeholder="Подтверждение пароля" required>
+    <label for="first_name"></label><input type="text" id="first_name" name="first_name" placeholder="Имя" required>
+    <label for="last_name"></label><input type="text" id="last_name" name="last_name" placeholder="Фамилия" required>
+    <label for="phone"></label><input type="tel" id="phone" name="phone" placeholder="Номер телефона" required>
 
-<h1>Регистрация</h1>
+    <div class="checkbox-wrapper">
+      <input type="checkbox" id="isWorker">
+      <label for="isWorker">Я работник</label>
+    </div>
 
-<form id="registerForm">
-  <label for="username"></label><input type="text" id="username" name="username" placeholder="Юзернейм" required>
-  <label for="password"></label><input type="password" id="password" name="password" placeholder="Пароль" required>
-  <label for="confirm_password"></label><input type="password" id="confirm_password" name="confirm_password"
-                                               placeholder="Подтверждение пароля" required>
-  <label for="first_name"></label><input type="text" id="first_name" name="first_name" placeholder="Имя" required>
-  <label for="last_name"></label><input type="text" id="last_name" name="last_name" placeholder="Фамилия" required>
-  <label for="phone"></label><input type="tel" id="phone" name="phone" placeholder="Номер телефона" required>
-  <label for="isWorker">Работник</label><input type="checkbox" id="isWorker">
-  <button type="submit">Зарегистрироваться</button>
-  <button class="switch-page" onclick="window.location.href='login.html'">Вход</button>
-</form>
-
-</body>
+    <button type="submit">Зарегистрироваться</button>
+    <button type="button" class="switch-page" onclick="window.location.href='login.html'">Вход</button>
+  </form>
+</div>
 <script src="js/registration.js"></script>
+</body>
 </html>
