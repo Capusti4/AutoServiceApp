@@ -2,7 +2,6 @@ async function loadMyFeedbacks(type) {
     const container = document.getElementById("feedbacks-list");
     container.innerHTML = "<p>Загрузка...</p>";
 
-    // Переключаем стили кнопок (активная/неактивная)
     const tabForMe = document.getElementById("tab-for-me");
     const tabByMe = document.getElementById("tab-by-me");
 
@@ -35,7 +34,7 @@ async function loadMyFeedbacks(type) {
     feedbacks.forEach(item => {
         const stars = "★".repeat(item.rating) + "☆".repeat(5 - item.rating);
         const div = document.createElement("div");
-        div.className = "order-card"; // Используем стиль карточек из css
+        div.className = "order-card";
         div.innerHTML = `
             <p style="color: #f59e0b; font-size: 1.2rem; margin-bottom: 0.5rem;">${stars}</p>
             <p style="color: var(--text-main);">${item.feedback || "<i>Без комментария</i>"}</p>
@@ -44,5 +43,5 @@ async function loadMyFeedbacks(type) {
     });
 }
 
-// Загружаем отзывы обо мне при открытии страницы
+
 loadMyFeedbacks('ForUser').then();

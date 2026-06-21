@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 :root {
-    --bg-color: #f0f7ff; /* Приятный светло-голубой фон всей страницы */
-    --primary-color: #7baaf7; /* Основной голубой акцент */
-    --primary-hover: #5a91f5; /* Цвет при наведении */
+    --bg-color: #f0f7ff;
+    --primary-color: #7baaf7;
+    --primary-hover: #5a91f5;
     --card-bg: #ffffff;
     --text-main: #334155;
     --text-muted: #64748b;
@@ -30,7 +30,6 @@ body {
     padding: 2rem 1rem;
 }
 
-/* Универсальная карточка для центрирования контента */
 .container {
     background-color: var(--card-bg);
     padding: 2.5rem;
@@ -41,7 +40,6 @@ body {
     text-align: center;
 }
 
-/* Контейнер пошире для списка заказов */
 .container-large {
     max-width: 1000px;
     align-items: flex-start;
@@ -55,7 +53,6 @@ h1 {
     font-weight: 600;
 }
 
-/* Формы */
 form {
     display: flex;
     flex-direction: column;
@@ -100,7 +97,6 @@ textarea {
     min-height: 110px;
 }
 
-/* Чекбоксы */
 .checkbox-wrapper {
     display: flex;
     align-items: center;
@@ -120,7 +116,6 @@ textarea {
     cursor: pointer;
 }
 
-/* Кнопки */
 button {
     background-color: var(--primary-color);
     color: #ffffff;
@@ -157,7 +152,6 @@ button[type="reset"]:hover,
     background-color: rgba(123, 170, 247, 0.1);
 }
 
-/* Стили для профиля на главной странице */
 .user-info {
     text-align: left;
     background: #f8fafc;
@@ -179,7 +173,6 @@ button[type="reset"]:hover,
     gap: 0.8rem;
 }
 
-/* Сетка заказов */
 #orders {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -219,10 +212,9 @@ button[type="reset"]:hover,
 }
 
 .order-card button {
-    margin-top: auto; /* Прижимаем кнопку к низу карточки */
+    margin-top: auto;
 }
 
-/* Модальные окна */
 .modal {
     position: fixed;
     top: 0;
@@ -257,9 +249,6 @@ button[type="reset"]:hover,
     margin-top: 1.5rem;
 }
 
-/* --- Стили для уведомлений --- */
-
-/* Красный кружок-счетчик */
 .badge {
     background-color: #ef4444;
     color: white;
@@ -267,11 +256,10 @@ button[type="reset"]:hover,
     border-radius: 12px;
     font-size: 0.8rem;
     margin-left: 8px;
-    display: none; /* Скрыт по умолчанию */
+    display: none;
     font-weight: 600;
 }
 
-/* Карточка уведомления */
 .notification-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -285,7 +273,6 @@ button[type="reset"]:hover,
     transition: var(--transition);
 }
 
-/* Выделение непрочитанных */
 .notification-card.unread {
     border-left: 4px solid var(--primary-color);
     background-color: #f8fafc;
@@ -297,7 +284,6 @@ button[type="reset"]:hover,
     line-height: 1.5;
 }
 
-/* Кнопки внутри уведомления */
 .notification-actions {
     display: flex;
     gap: 0.5rem;
@@ -311,7 +297,6 @@ button[type="reset"]:hover,
     margin-top: 0;
 }
 
-/* Кнопка удаления */
 .btn-danger {
     background-color: transparent;
     color: #ef4444;
@@ -322,7 +307,6 @@ button[type="reset"]:hover,
     background-color: rgba(239, 68, 68, 0.1);
 }
 
-/* Кликабельное имя/ID */
 .clickable-user {
     color: var(--primary-color);
     font-weight: 600;

@@ -1,4 +1,3 @@
-// Загрузка уведомлений при открытии страницы
 async function loadNotifications() {
     const container = document.getElementById("notifications-list");
     container.innerHTML = "<p>Загрузка...</p>";
@@ -15,8 +14,6 @@ async function loadNotifications() {
 
     const data = await response.json();
 
-    // Spring обычно возвращает список либо напрямую, либо внутри DTO.
-    // Если у тебя в GetNotificationsResponse есть поле notifications (List<Notification>), используем его.
     const notifications = data.notifications;
 
     container.innerHTML = "";
@@ -28,12 +25,10 @@ async function loadNotifications() {
 
     notifications.forEach(notif => {
         const div = document.createElement("div");
-        // Предполагаем, что в Java сущности есть boolean поле isRead / read
         const isRead = notif.read;
 
         div.className = `notification-card ${!isRead ? 'unread' : ''}`;
 
-        // Предполагаем, что текст лежит в поле message
         div.innerHTML = `
             <p>${notif.message || "Новое уведомление"}</p>
             <div class="notification-actions">
@@ -48,22 +43,20 @@ async function loadNotifications() {
     });
 }
 
-// Смена статуса: Прочитано / Непрочитано
 async function toggleReadStatus(id, action) {
-    // action может быть 'read' или 'unread'
     const response = await fetch(`http://localhost:8080/${action}Notification/${id}`, {
         method: 'PATCH',
         credentials: 'include'
     });
 
     if (response.ok) {
-        await loadNotifications(); // Перезагружаем список
+        await loadNotifications();
     } else {
         alert("Ошибка при изменении статуса");
     }
 }
 
-// Удаление
+
 async function deleteNotification(id) {
     if (!confirm("Удалить это уведомление?")) return;
 
@@ -79,7 +72,7 @@ async function deleteNotification(id) {
     }
 }
 
-// Прочитать все сразу
+
 async function readAllNotifications() {
     const response = await fetch(`http://localhost:8080/readAllNotifications`, {
         method: 'PATCH',
@@ -87,11 +80,11 @@ async function readAllNotifications() {
     });
 
     if (response.ok) {
-        loadNotifications();
+        await loadNotifications();
     } else {
         alert("Ошибка при обновлении статуса");
     }
 }
 
-// Запускаем при загрузке скрипта
+
 loadNotifications().then();

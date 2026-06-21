@@ -157,13 +157,13 @@ function openFeedbackModal(orderId, targetId) {
     }
     currentFeedbackOrderId = orderId;
     currentFeedbackTargetId = targetId;
-    document.getElementById("feedback-modal").style.display = "flex"; // Используем flex для центрирования из твоего CSS
+    document.getElementById("feedback-modal").style.display = "flex";
 }
 
 function closeFeedbackModal() {
     document.getElementById("feedback-modal").style.display = "none";
-    document.getElementById("feedback-rating").value = "5"; // Сбрасываем на 5
-    document.getElementById("feedback-comment").value = ""; // Очищаем текст
+    document.getElementById("feedback-rating").value = "5";
+    document.getElementById("feedback-comment").value = "";
     currentFeedbackOrderId = null;
     currentFeedbackTargetId = null;
 }
@@ -174,7 +174,6 @@ async function submitFeedback() {
     const rating = document.getElementById("feedback-rating").value;
     const comment = document.getElementById("feedback-comment").value;
 
-    // Получаем свои данные, чтобы знать свой authorId
     const meResponse = await fetch("http://localhost:8080/getMe", {
         method: 'GET', credentials: 'include'
     });
@@ -201,7 +200,7 @@ async function submitFeedback() {
         const data = await response.json();
         alert(data.message || "Отзыв успешно отправлен!");
         closeFeedbackModal();
-        location.reload(); // Перезагружаем страницу, чтобы кнопка пропала
+        location.reload();
     } else {
         const errorData = await response.json();
         alert(errorData.error || "Ошибка при отправке отзыва");
@@ -214,13 +213,12 @@ async function viewUserFeedbacks(userId, lastName, firstName) {
     const title = document.getElementById("view-feedbacks-title");
 
     console.log(userId, lastName, firstName)
-    // Используем полученные параметры напрямую
+
     title.innerText = `Отзывы о пользователе ${lastName} ${firstName} ID: ${userId}`;
     container.innerHTML = "<p style='text-align: center;'>Загрузка...</p>";
     modal.style.display = "flex";
 
     try {
-        // Подставляем userId
         const response = await fetch(`http://localhost:8080/getUserFeedbacks/${userId}`, {
             method: 'GET', credentials: 'include'
         });
