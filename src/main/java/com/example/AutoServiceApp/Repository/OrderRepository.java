@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Collection;
+import java.util.List;
 
 
 public interface OrderRepository
@@ -15,6 +16,7 @@ public interface OrderRepository
     @Query("""
             SELECT new com.example.AutoServiceApp.DTO.OrderDTO(
                 o.id,
+                o.customer,
                 w,
                 o.price,
                 o.budget,
@@ -33,6 +35,7 @@ public interface OrderRepository
     @Query("""
             SELECT new com.example.AutoServiceApp.DTO.OrderDTO(
                 o.id,
+                o.customer,
                 o.worker,
                 o.price,
                 o.budget,
@@ -46,4 +49,22 @@ public interface OrderRepository
             WHERE o.worker = :worker
             """)
     Collection<OrderDTO> findAllByWorker(UserEntity worker);
+
+    @Query("""
+            SELECT new com.example.AutoServiceApp.DTO.OrderDTO(
+                o.id,
+                o.customer,
+                o.worker,
+                o.price,
+                o.budget,
+                o.type.name,
+                o.status,
+                o.comment,
+                o.hasCustomerFeedback,
+                o.hasWorkerFeedback
+            )
+            FROM OrderEntity o
+            WHERE o.customer = :customer
+            """)
+    List<OrderDTO> findAllByCustomer(UserEntity customer);
 }

@@ -2,9 +2,10 @@ package com.example.AutoServiceApp.Entity;
 
 import com.example.AutoServiceApp.Exception.IncorrectFeedbackRating;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 
-
+@Getter
 @Entity
 @Table(name = "feedbacks")
 public class FeedbackEntity {
@@ -15,7 +16,7 @@ public class FeedbackEntity {
     @Column(nullable = false)
     private int rating;
 
-    @Column(nullable = false)
+    @Column()
     private String feedback;
 
     @ManyToOne
@@ -26,11 +27,15 @@ public class FeedbackEntity {
     @JoinColumn(name = "target_id", nullable = false)
     private UserEntity target;
 
+    @ManyToOne
+    @JoinColumn(name = "order_id", nullable = false)
+    private OrderEntity order;
+
     protected FeedbackEntity() {
 
     }
 
-    public FeedbackEntity(int rating, String feedback, UserEntity author, UserEntity target) {
+    public FeedbackEntity(int rating, String feedback, UserEntity author, UserEntity target, OrderEntity order) {
         if (rating > 5 || rating < 1) {
             throw new IncorrectFeedbackRating();
         }
@@ -38,5 +43,6 @@ public class FeedbackEntity {
         this.feedback = feedback;
         this.author = author;
         this.target = target;
+        this.order = order;
     }
 }

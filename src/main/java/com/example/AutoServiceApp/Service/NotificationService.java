@@ -5,6 +5,7 @@ import com.example.AutoServiceApp.Entity.NotificationEntity;
 import com.example.AutoServiceApp.Entity.UserEntity;
 import com.example.AutoServiceApp.Exception.IncorrectNotificationId;
 import com.example.AutoServiceApp.Repository.NotificationRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,16 +29,16 @@ public class NotificationService {
         throw new IncorrectNotificationId();
     }
 
+    @Transactional
     public void readNotification(UserEntity user, long notificationId) {
         NotificationEntity notification = getNotification(user, notificationId);
         notification.read();
-        notificationRepository.save(notification);
     }
 
+    @Transactional
     public void unreadNotification(UserEntity user, long notificationId) {
         NotificationEntity notification = getNotification(user, notificationId);
         notification.unread();
-        notificationRepository.save(notification);
     }
 
     private NotificationEntity getNotification(UserEntity user, long notificationId) {
@@ -48,12 +49,12 @@ public class NotificationService {
         return notification;
     }
 
+    @Transactional
     public void readAllNotifications(UserEntity user) {
         List<NotificationEntity> notifications = notificationRepository.findByUser(user);
         for (NotificationEntity notification : notifications) {
             notification.read();
         }
-        notificationRepository.saveAll(notifications);
     }
 
     public int getUnreadNotificationsAmount(UserEntity user) {

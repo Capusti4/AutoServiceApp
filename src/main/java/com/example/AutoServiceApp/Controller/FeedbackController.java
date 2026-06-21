@@ -23,25 +23,38 @@ public class FeedbackController {
     }
 
     @GetMapping("/getFeedbacks{feedbacksType}")
-    public ResponseEntity<?> getFeedbacksByUser(
+    public ResponseEntity<?> getFeedbacks(
             @PathVariable String feedbacksType,
             HttpSession session
     ) {
         UserEntity user = userService.getUser(session);
         FeedbackResponse response;
         if (feedbacksType.equals("ByUser")) {
-            response = FeedbackService.getFeedbacksByUser(user);
+            response = feedbackService.getFeedbacksByUser(user);
         } else if (feedbacksType.equals("ForUser")) {
-            response = FeedbackService.getFeedbacksForUser(user);
+            response = feedbackService.getFeedbacksForUser(user);
         } else {
             throw new IncorrectFeedbackType();
         }
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @GetMapping("/getUserFeedbacks/{userId}")
+    public ResponseEntity<?> getUserFeedbacks(
+            @PathVariable long userId
+    ) {
+        FeedbackResponse response = feedbackService.getFeedbacksForUser(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+
     @PostMapping("/sendFeedback")
-    public ResponseEntity<?> sendFeedback(@RequestBody SendFeedbackRequest request) {
-        feedbackService.createFeedback(request);
+    public ResponseEntity<?> sendFeedback(
+            @RequestBody SendFeedbackRequest request,
+            HttpSession session
+    ) {
+        UserEntity user = userService.getUser(session);
+        feedbackService.createFeedback(user, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Спасибо за Ваш отзыв!"));
     }
 }

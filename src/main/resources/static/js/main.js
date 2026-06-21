@@ -5,10 +5,10 @@ async function tryLoginByCookies() {
     });
     const data = await response.json();
     if (response.ok) {
-        document.getElementById("username").innerText = data.username;
-        document.getElementById("first-name").innerText = data.firstname;
-        document.getElementById("last-name").innerText = data.lastname;
-        document.getElementById("phone").innerText = data.phoneNumber;
+        document.getElementById("username").innerText = `Юзернейм: ${data.username}`;
+        document.getElementById("first-name").innerText = `Имя: ${data.firstname}`;
+        document.getElementById("last-name").innerText = `Фамилия: ${data.lastname}`;
+        document.getElementById("phone").innerText = `Номер телефона: ${data.phoneNumber}`;
         if (data.isWorker) {
             document.getElementById("make-order").remove();
         }

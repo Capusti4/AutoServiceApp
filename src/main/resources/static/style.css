@@ -321,3 +321,17 @@ button[type="reset"]:hover,
 .btn-danger:hover {
     background-color: rgba(239, 68, 68, 0.1);
 }
+
+/* Кликабельное имя/ID */
+.clickable-user {
+    color: var(--primary-color);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: var(--transition);
+}
+
+.clickable-user:hover {
+    text-decoration-color: var(--primary-color);
+}

@@ -21,6 +21,7 @@ public class OrderEntity {
     @JoinColumn(name = "customer_id")
     private UserEntity customer;
 
+    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "worker_id")
     private UserEntity worker;
@@ -79,6 +80,7 @@ public class OrderEntity {
     public OrderDTO getDTO() {
         return new OrderDTO(
                 id,
+                customer,
                 worker,
                 price,
                 budget,
@@ -88,5 +90,19 @@ public class OrderEntity {
                 hasCustomerFeedback,
                 hasWorkerFeedback
         );
+    }
+
+    public void setCustomerFeedback() {
+        if (hasCustomerFeedback) {
+            throw new IncorrectOrderId();
+        }
+        hasCustomerFeedback = true;
+    }
+
+    public void setWorkerFeedback() {
+        if (hasWorkerFeedback) {
+            throw new IncorrectOrderId();
+        }
+        hasWorkerFeedback = true;
     }
 }

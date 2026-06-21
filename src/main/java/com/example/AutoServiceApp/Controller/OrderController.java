@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -96,15 +95,7 @@ public class OrderController {
             HttpSession session
     ) {
         UserEntity user = userService.getUser(session);
-        GetOrdersResponse response;
-        if (user.isWorker()) {
-            List<OrderDTO> workerOrders = new ArrayList<>();
-            workerOrders.addAll(orderRepository.findAllByWorker(user));
-            workerOrders.addAll(orderRepository.findAllByStatus("new"));
-            response = new GetOrdersResponse(workerOrders);
-        } else {
-            response = new GetOrdersResponse(user.getOrders());
-        }
+        GetOrdersResponse response = orderService.getOrders(user);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

@@ -1,15 +1,11 @@
 package com.example.AutoServiceApp.Entity;
 
-import com.example.AutoServiceApp.DTO.OrderDTO;
 import com.example.AutoServiceApp.Exception.IncorrectName;
 import com.example.AutoServiceApp.Exception.IncorrectPhoneNumber;
 import com.example.AutoServiceApp.Exception.IncorrectUsername;
 import jakarta.persistence.*;
-import jakarta.transaction.Transactional;
 import lombok.Getter;
-
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Setter;
 
 
 @Entity
@@ -45,20 +41,10 @@ public class UserEntity {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @Setter
     @Getter
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
-
-    @Getter
-    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
-    private List<FeedbackEntity> feedbacksByUser;
-
-    @Getter
-    @OneToMany(mappedBy = "target", fetch = FetchType.LAZY)
-    private List<FeedbackEntity> feedbacksForUser;
-
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
-    private List<OrderEntity> orders;
 
     protected UserEntity() {
     }
@@ -86,9 +72,6 @@ public class UserEntity {
         }
         this.username = username;
         this.password = password;
-        orders = new ArrayList<>();
-        feedbacksByUser = new ArrayList<>();
-        feedbacksForUser = new ArrayList<>();
         this.isWorker = isWorker;
     }
 
@@ -103,15 +86,6 @@ public class UserEntity {
 
     public boolean checkPassword(String password) {
         return this.password.equals(password);
-    }
-
-    @Transactional
-    public List<OrderDTO> getOrders() {
-        List<OrderDTO> orders = new ArrayList<>();
-        for (OrderEntity order : this.orders) {
-            orders.add(order.getDTO());
-        }
-        return orders;
     }
 }
 

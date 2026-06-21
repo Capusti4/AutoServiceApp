@@ -7,7 +7,8 @@ import java.math.BigDecimal;
 
 public record OrderDTO(
         long id,
-        UserEntity worker,
+        UserEntity customer,
+        UserEntity worker   ,
         BigDecimal price,
         BigDecimal budget,
         String type,
