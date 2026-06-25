@@ -2,7 +2,6 @@ package com.example.AutoServiceApp.Service;
 
 import com.example.AutoServiceApp.DTO.GetOrdersResponse;
 import com.example.AutoServiceApp.DTO.MakeOrderRequest;
-import com.example.AutoServiceApp.DTO.OrderDTO;
 import com.example.AutoServiceApp.Entity.OrderEntity;
 import com.example.AutoServiceApp.Entity.OrderTypeEntity;
 import com.example.AutoServiceApp.Entity.UserEntity;
@@ -50,7 +49,7 @@ public class OrderService {
     public GetOrdersResponse getOrders(UserEntity user) {
         GetOrdersResponse response;
         if (user.isWorker()) {
-            List<OrderDTO> workerOrders = new ArrayList<>();
+            List<OrderEntity> workerOrders = new ArrayList<>();
             workerOrders.addAll(orderRepository.findAllByWorker(user));
             workerOrders.addAll(orderRepository.findAllByStatus("new"));
             response = new GetOrdersResponse(workerOrders);
@@ -58,5 +57,11 @@ public class OrderService {
             response = new GetOrdersResponse(orderRepository.findAllByCustomer(user));
         }
         return response;
+    }
+
+    public void cancelOrder(UserEntity user, long orderId) {
+        OrderEntity order = orderRepository.findById(orderId).orElseThrow(IncorrectOrderId::new);
+        if (order.getCustomer().getId() != user.getId()) throw new IncorrectOrderId();
+        orderRepository.delete(order);
     }
 }

@@ -1,14 +1,13 @@
 package com.example.AutoServiceApp.Entity;
 
 import com.example.AutoServiceApp.DTO.MakeOrderRequest;
-import com.example.AutoServiceApp.DTO.OrderDTO;
 import com.example.AutoServiceApp.Exception.IncorrectOrderId;
 import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.math.BigDecimal;
 
-
+@Getter
 @Entity
 @Table(name = "orders")
 public class OrderEntity {
@@ -16,17 +15,14 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private UserEntity customer;
 
-    @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "worker_id")
     private UserEntity worker;
 
-    @Getter
     @Column()
     private BigDecimal price = null;
 
@@ -37,7 +33,6 @@ public class OrderEntity {
     @JoinColumn(name = "type_id", nullable = false)
     private OrderTypeEntity type;
 
-    @Getter
     @Column(nullable = false)
     private String status = "new";
 
@@ -75,21 +70,6 @@ public class OrderEntity {
             this.status = "completed";
             this.price = price;
         }
-    }
-
-    public OrderDTO getDTO() {
-        return new OrderDTO(
-                id,
-                customer,
-                worker,
-                price,
-                budget,
-                type.getName(),
-                status,
-                comment,
-                hasCustomerFeedback,
-                hasWorkerFeedback
-        );
     }
 
     public void setCustomerFeedback() {

@@ -43,6 +43,11 @@ async function getOrders() {
             }
         }
 
+        let cancelButtonHtml = "";
+        if (order.status === "new" && !me.isWorker) {
+            cancelButtonHtml = `<button class="btn-danger" onclick="cancelOrder(${order.id})">Отменить заказ</button>`;
+        }
+
         const workerHtml = order.worker
             ? `<span class="clickable-user" onclick="viewUserFeedbacks(${order.worker.id}, '${order.worker.lastName}', '${order.worker.firstName}')">${order.worker.lastName} ${order.worker.firstName}</span>`
             : "не назначен";
@@ -57,9 +62,10 @@ async function getOrders() {
         <p><b>Работник:</b> ${workerHtml}</p>
         <p><b>Цена:</b> ${order.price ?? "Не назначена"}</p>
         <p><b>Бюджет:</b> ${order.budget ?? "Не ограничен"}</p>
-        <p><b>Тип:</b> ${order.type}</p>
+        <p><b>Тип:</b> ${order.type.name}</p>
         <p><b>Статус:</b> ${status}</p>
         <p><b>Комментарий:</b> ${order.comment || "Отсутствует"}</p>
+        ${cancelButtonHtml}
         ${feedbackButtonHtml}
     `;
         if (me.isWorker) {
@@ -74,18 +80,31 @@ async function getOrders() {
     });
 }
 
+async function cancelOrder(orderId) {
+    const response = await fetch(`http://localhost:8080/cancelOrder/${orderId}`, {
+        method: 'DELETE', credentials: 'include', headers: {
+            'Content-Type': 'application/json'
+        }});
+
+    await parseOrderResponse(response);
+}
+
 let currentOrderId = null;
 
 function openPreliminaryPriceModal(orderId) {
     currentOrderId = orderId;
-    document.getElementById("preliminary-price-input-modal").style.display = "block";
+    document.getElementById("preliminary-price-input-modal").style.display = "flex";
 }
 
 async function submitPreliminaryPrice() {
-    const value = document.getElementById("preliminaryPriceInput").value;
+    const value = +document.getElementById("preliminaryPriceInput").value;
 
     if (!currentOrderId) {
         alert("Ошибка: нет заказа");
+        return;
+    }
+    if (isNaN(value) || isNaN(parseFloat(value))) {
+        alert("Введите число");
         return;
     }
 
@@ -107,7 +126,7 @@ async function startOrder(id, price) {
 
 function openFinalPriceModal(orderId) {
     currentOrderId = orderId;
-    document.getElementById("final-price-input-modal").style.display = "block";
+    document.getElementById("final-price-input-modal").style.display = "flex";
 }
 
 async function submitFinalPrice() {
@@ -117,12 +136,18 @@ async function submitFinalPrice() {
         alert("Ошибка: нет заказа");
         return;
     }
+    if (isNaN(value) || isNaN(parseFloat(value))) {
+        alert("Введите число");
+        return;
+    }
 
     await completeOrder(currentOrderId, value);
 
     document.getElementById("final-price-input-modal").style.display = "none";
     currentOrderId = null;
 }
+
+
 
 async function completeOrder(id, price) {
     const response = await fetch(`http://localhost:8080/completeOrder/${id}`, {
@@ -254,5 +279,30 @@ async function viewUserFeedbacks(userId, lastName, firstName) {
 function closeViewFeedbacksModal() {
     document.getElementById("view-feedbacks-modal").style.display = "none";
 }
+
+window.addEventListener("click", function(event) {
+    const prelimModal = document.getElementById("preliminary-price-input-modal");
+    const finalModal = document.getElementById("final-price-input-modal");
+    const feedbackModal = document.getElementById("feedback-modal");
+    const viewFeedbacksModal = document.getElementById("view-feedbacks-modal");
+
+    if (event.target === prelimModal) {
+        prelimModal.style.display = "none";
+        currentOrderId = null;
+    }
+
+    if (event.target === finalModal) {
+        finalModal.style.display = "none";
+        currentOrderId = null;
+    }
+
+    if (event.target === feedbackModal) {
+        closeFeedbackModal();
+    }
+
+    if (event.target === viewFeedbacksModal) {
+        closeViewFeedbacksModal();
+    }
+});
 
 getOrders().then();

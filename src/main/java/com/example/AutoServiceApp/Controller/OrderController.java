@@ -107,4 +107,14 @@ public class OrderController {
         List<OrderTypeEntity> types = orderTypeRepository.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(types);
     }
+
+    @DeleteMapping("/cancelOrder/{orderId}")
+    public ResponseEntity<?> cancelOrder(
+            HttpSession session,
+            @PathVariable long orderId
+    ) {
+        UserEntity user = userService.getUser(session);
+        orderService.cancelOrder(user, orderId);
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Заказ успешно отменен!"));
+    }
 }
